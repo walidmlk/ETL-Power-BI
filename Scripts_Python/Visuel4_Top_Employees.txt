@@ -1,0 +1,144 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+print("=== TOP 10 EMPLOYÉS PAR NOMBRE DE COMMANDES ===")
+print("="*60)
+
+# Vérifier les données
+print(f" Données reçues: {len(dataset):,} lignes")
+print(f" Colonnes: {list(dataset.columns)}")
+
+# Vérifier si on a les colonnes nécessaires
+if 'Nombre Total Commandes' not in dataset.columns:
+    print(" La mesure n'est pas dans les données")
+    print(" Glissez 'Nombre Total Commandes' dans Power BI")
+else:
+    # Vérifier si on a Nom et Prenom
+    has_names = 'Nom' in dataset.columns and 'Prenom' in dataset.columns
+    
+    if has_names:
+        # Créer un nom complet
+        dataset['Employe'] = dataset['Prenom'] + ' ' + dataset['Nom']
+        label_col = 'Employe'
+    elif 'Nom' in dataset.columns:
+        label_col = 'Nom'
+    elif 'id_seqEmployee' in dataset.columns:
+        dataset['Employe'] = 'Emp. ' + dataset['id_seqEmployee'].astype(str)
+        label_col = 'Employe'
+    else:
+        # Utiliser la première colonne non-mesure
+        non_measure_cols = [col for col in dataset.columns if col != 'Nombre Total Commandes']
+        if non_measure_cols:
+            label_col = non_measure_cols[0]
+        else:
+            label_col = 'index'
+            dataset[label_col] = range(len(dataset))
+    
+    # Calculs
+    total_general = dataset['Nombre Total Commandes'].sum()
+    
+    # Top 10
+    top_10 = dataset.nlargest(10, 'Nombre Total Commandes').copy()
+    top_10_display = top_10.sort_values('Nombre Total Commandes', ascending=True)
+    
+    top10_total = top_10['Nombre Total Commandes'].sum()
+    pourcentage = (top10_total / total_general * 100) if total_general > 0 else 0
+    
+    print(f"\n STATISTIQUES:")
+    print(f"   • Employés totaux: {len(dataset)}")
+    print(f"   • Commandes totales: {int(total_general):,}")
+    print(f"   • Top 10 représente: {pourcentage:.1f}%")
+    
+    # Graphique
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Barres horizontales
+    y_pos = np.arange(len(top_10_display))
+    colors = plt.cm.Greens(np.linspace(0.4, 0.9, len(top_10_display)))
+    
+    bars = ax.barh(y_pos, top_10_display['Nombre Total Commandes'], 
+                   color=colors, edgecolor='darkgreen', height=0.7)
+    
+    # Ajouter les valeurs
+    for i, (bar, total) in enumerate(zip(bars, top_10_display['Nombre Total Commandes'])):
+        # Pourcentage dans le top 10
+        pourcentage_emp = (total / top10_total * 100) if top10_total > 0 else 0
+        
+        # Texte à droite
+        ax.text(bar.get_width() + bar.get_width() * 0.01,
+                bar.get_y() + bar.get_height()/2,
+                f"{int(total):,}\n({pourcentage_emp:.1f}%)",
+                va='center',
+                fontsize=10,
+                fontweight='bold')
+        
+        # Nom à l'intérieur si assez de place
+        if bar.get_width() > top_10_display['Nombre Total Commandes'].max() * 0.3:
+            label = top_10_display.iloc[i][label_col]
+            if len(str(label)) > 20:
+                label = str(label)[:17] + "..."
+            ax.text(bar.get_width() * 0.02,
+                    bar.get_y() + bar.get_height()/2,
+                    label,
+                    va='center',
+                    fontsize=9,
+                    color='white',
+                    fontweight='bold')
+    
+    # Configuration
+    ax.set_yticks(y_pos)
+    
+    # Limiter la longueur des labels pour l'axe Y
+    y_labels = []
+    for i in range(len(top_10_display)):
+        label = str(top_10_display.iloc[i][label_col])
+        if len(label) > 25:
+            label = label[:22] + "..."
+        y_labels.append(label)
+    
+    ax.set_yticklabels(y_labels, fontsize=11)
+    ax.set_xlabel('Nombre de Commandes', fontsize=12, fontweight='bold')
+    ax.set_title(f' TOP 10 EMPLOYÉS - {int(top10_total):,} COMMANDES ({pourcentage:.1f}% du total)',
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    # Ligne de la moyenne
+    moyenne = top_10['Nombre Total Commandes'].mean()
+    ax.axvline(x=moyenne, color='red', linestyle='--', linewidth=2,
+               alpha=0.7, label=f'Moyenne: {int(moyenne):,} cmd')
+    
+    # Grille
+    ax.grid(True, axis='x', alpha=0.3, linestyle=':')
+    
+    # Style
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    
+    # Légende
+    ax.legend(loc='lower right')
+    
+    # Statistiques
+    stats_text = f""" STATISTIQUES EMPLOYÉS:
+• Employés analysés: {len(dataset)}
+• Commandes totales: {int(total_general):,}
+• Moyenne par employé: {dataset['Nombre Total Commandes'].mean():.1f} cmd
+• Meilleur employé: {int(top_10['Nombre Total Commandes'].max()):,} cmd
+• Top 10: {int(top10_total):,} cmd ({pourcentage:.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+               bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgreen", alpha=0.8))
+    
+    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    
+    # Afficher les résultats
+    print("\n" + "="*70)
+    print("TOP 10 EMPLOYÉS:")
+    print("="*70)
+    
+    for i, row in top_10.iterrows():
+        emp_pourcentage = (row['Nombre Total Commandes'] / total_general * 100) if total_general > 0 else 0
+        emp_label = row[label_col] if label_col in row else f"Employé {i+1}"
+        print(f"{emp_label}: {int(row['Nombre Total Commandes']):,} cmd ({emp_pourcentage:.1f}%)")
+    
+    plt.show()

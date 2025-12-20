@@ -1,0 +1,105 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Vérification des colonnes
+colonnes_requises = ['id_temps', 'nbr_commande_livrees', 'nbr_commande_non_livrees', 'mois_annee']
+colonnes_manquantes = [col for col in colonnes_requises if col not in dataset.columns]
+
+if colonnes_manquantes:
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.text(0.5, 0.5, f"Glissez ces colonnes:\n{', '.join(colonnes_manquantes)}", 
+            ha='center', va='center', fontsize=12, color='red',
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="yellow", alpha=0.7))
+    ax.axis('off')
+    plt.show()
+    
+else:
+    # Agrégation par mois
+    commandes_par_mois = dataset.groupby('mois_annee').agg({
+        'nbr_commande_livrees': 'sum',
+        'nbr_commande_non_livrees': 'sum'
+    }).reset_index()
+    
+    commandes_par_mois['total_commandes'] = (
+        commandes_par_mois['nbr_commande_livrees'] + 
+        commandes_par_mois['nbr_commande_non_livrees']
+    )
+    
+    commandes_par_mois['taux_livraison'] = (
+        commandes_par_mois['nbr_commande_livrees'] / 
+        commandes_par_mois['total_commandes'] * 100
+    ).round(1)
+    
+    # Trier par date
+    try:
+        commandes_par_mois['date_sort'] = pd.to_datetime(
+            commandes_par_mois['mois_annee'] + '/01', 
+            format='%m/%Y/%d'
+        )
+        commandes_par_mois = commandes_par_mois.sort_values('date_sort')
+    except:
+        commandes_par_mois = commandes_par_mois.sort_values('mois_annee')
+    
+    # Création du graphique
+    fig, ax = plt.subplots(figsize=(14, 7))
+    
+    x = range(len(commandes_par_mois))
+    mois_labels = commandes_par_mois['mois_annee'].tolist()
+    taux = commandes_par_mois['taux_livraison'].tolist()
+    
+    # Ligne avec points
+    ax.plot(x, taux, marker='o', linewidth=2, color='blue', 
+            markersize=8, label='Taux de Livraison')
+    
+    # Zone remplie sous la ligne
+    ax.fill_between(x, taux, alpha=0.2, color='blue')
+    
+    # Ligne d'objectif
+    ax.axhline(y=80, color='red', linestyle='--', 
+               linewidth=2, alpha=0.7, label='Objectif 80%')
+    
+    # Mise en forme
+    ax.set_xlabel('Mois', fontsize=12)
+    ax.set_ylabel('Taux de Livraison (%)', fontsize=12)
+    ax.set_title('TAUX DE LIVRAISON PAR MOIS', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(mois_labels, rotation=45, ha='right')
+    ax.set_ylim([0, 105])
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='upper right')
+    
+    # Ajouter les valeurs sur les points
+    for i, (taux_val, mois) in enumerate(zip(taux, mois_labels)):
+        ax.text(i, taux_val + 2, f'{taux_val}%', 
+                ha='center', va='bottom', fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
+    
+    # Indicateurs de performance
+    taux_moyen = commandes_par_mois['taux_livraison'].mean()
+    au_dessus_objectif = (commandes_par_mois['taux_livraison'] >= 80).sum()
+    total_mois = len(commandes_par_mois)
+    
+    stats_text = f""" PERFORMANCE:
+• Taux moyen: {taux_moyen:.1f}%
+• Mois ≥ 80%: {au_dessus_objectif}/{total_mois} ({au_dessus_objectif/total_mois*100:.0f}%)
+• Meilleur mois: {commandes_par_mois.loc[commandes_par_mois['taux_livraison'].idxmax(), 'mois_annee']} ({commandes_par_mois['taux_livraison'].max():.1f}%)
+• Pire mois: {commandes_par_mois.loc[commandes_par_mois['taux_livraison'].idxmin(), 'mois_annee']} ({commandes_par_mois['taux_livraison'].min():.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgray", alpha=0.8))
+    
+    # Coloration de fond par performance
+    for i in x:
+        if taux[i] >= 90:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='green')
+        elif taux[i] >= 80:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='lightgreen')
+        elif taux[i] >= 70:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='orange')
+        else:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='red')
+    
+    plt.tight_layout()
+    plt.show()

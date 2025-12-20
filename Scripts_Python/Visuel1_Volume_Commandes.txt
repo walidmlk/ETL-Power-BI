@@ -1,0 +1,73 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Vérification des colonnes
+colonnes_requises = ['id_temps', 'nbr_commande_livrees', 'nbr_commande_non_livrees', 'mois_annee']
+colonnes_manquantes = [col for col in colonnes_requises if col not in dataset.columns]
+
+if colonnes_manquantes:
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.text(0.5, 0.5, f"Glissez ces colonnes:\n{', '.join(colonnes_manquantes)}", 
+            ha='center', va='center', fontsize=12, color='red',
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="yellow", alpha=0.7))
+    ax.axis('off')
+    plt.show()
+    
+else:
+    # Agrégation par mois
+    commandes_par_mois = dataset.groupby('mois_annee').agg({
+        'nbr_commande_livrees': 'sum',
+        'nbr_commande_non_livrees': 'sum'
+    }).reset_index()
+    
+    commandes_par_mois['total_commandes'] = (
+        commandes_par_mois['nbr_commande_livrees'] + 
+        commandes_par_mois['nbr_commande_non_livrees']
+    )
+    
+    # Trier par date
+    try:
+        commandes_par_mois['date_sort'] = pd.to_datetime(
+            commandes_par_mois['mois_annee'] + '/01', 
+            format='%m/%Y/%d'
+        )
+        commandes_par_mois = commandes_par_mois.sort_values('date_sort')
+    except:
+        commandes_par_mois = commandes_par_mois.sort_values('mois_annee')
+    
+    # Création du graphique
+    fig, ax = plt.subplots(figsize=(14, 7))
+    
+    x = range(len(commandes_par_mois))
+    mois_labels = commandes_par_mois['mois_annee'].tolist()
+    
+    # Barres empilées
+    ax.bar(x, commandes_par_mois['nbr_commande_livrees'], 
+           label='Commandes Livrées', color='green', alpha=0.7)
+    ax.bar(x, commandes_par_mois['nbr_commande_non_livrees'],
+           bottom=commandes_par_mois['nbr_commande_livrees'],
+           label='Commandes Non Livrées', color='red', alpha=0.7)
+    
+    ax.set_xlabel('Mois', fontsize=12)
+    ax.set_ylabel('Nombre de Commandes', fontsize=12)
+    ax.set_title('VOLUME DES COMMANDES PAR MOIS', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(mois_labels, rotation=45, ha='right')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Ajouter les totaux au-dessus des barres
+    for i, total in enumerate(commandes_par_mois['total_commandes']):
+        ax.text(i, total + (total*0.01), f'{total:,}', 
+                ha='center', va='bottom', fontsize=9)
+    
+    # Statistiques
+    total_periode = commandes_par_mois['total_commandes'].sum()
+    stats_text = f"Total période: {total_periode:,} commandes"
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgray", alpha=0.8))
+    
+    plt.tight_layout()
+    plt.show()

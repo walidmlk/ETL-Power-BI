@@ -1,0 +1,110 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+print("=== TOP 10 CLIENTS PAR NOMBRE DE COMMANDES ===")
+print("="*60)
+
+# 1. Vérifier les données
+print(f" Données reçues: {len(dataset):,} lignes")
+print(f" Colonnes disponibles: {list(dataset.columns)}")
+
+# 2. Vérifier la mesure
+if 'Nombre Total Commandes' not in dataset.columns:
+    print(" La mesure 'Nombre Total Commandes' n'est pas dans les données")
+    print(" Glissez-la dans Power BI avec CompanyName")
+else:
+    # 3. Calculs
+    total_general = dataset['Nombre Total Commandes'].sum()
+    
+    # Top 10
+    top_10 = dataset.nlargest(10, 'Nombre Total Commandes').copy()
+    top_10_display = top_10.sort_values('Nombre Total Commandes', ascending=True)
+    
+    top10_total = top_10['Nombre Total Commandes'].sum()
+    pourcentage = (top10_total / total_general * 100) if total_general > 0 else 0
+    
+    print(f"\n STATISTIQUES:")
+    print(f"   • Clients totaux: {len(dataset)}")
+    print(f"   • Commandes totales: {int(total_general):,}")
+    print(f"   • Top 10 représente: {pourcentage:.1f}%")
+    
+    # 4. Graphique
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Barres horizontales
+    y_pos = np.arange(len(top_10_display))
+    colors = plt.cm.Blues(np.linspace(0.4, 0.9, len(top_10_display)))
+    
+    bars = ax.barh(y_pos, top_10_display['Nombre Total Commandes'], 
+                   color=colors, edgecolor='darkblue', height=0.7)
+    
+    # Ajouter les valeurs
+    for i, (bar, total) in enumerate(zip(bars, top_10_display['Nombre Total Commandes'])):
+        # Pourcentage par rapport au top 10
+        pourcentage_client = (total / top10_total * 100) if top10_total > 0 else 0
+        
+        # Texte à droite
+        ax.text(bar.get_width() + bar.get_width() * 0.01,
+                bar.get_y() + bar.get_height()/2,
+                f"{int(total):,}\n({pourcentage_client:.1f}%)",
+                va='center',
+                fontsize=10,
+                fontweight='bold')
+        
+        # Texte à l'intérieur (pour les grandes barres)
+        if bar.get_width() > top_10_display['Nombre Total Commandes'].max() * 0.3:
+            ax.text(bar.get_width() * 0.02,
+                    bar.get_y() + bar.get_height()/2,
+                    top_10_display.iloc[i]['CompanyName'],
+                    va='center',
+                    fontsize=9,
+                    color='white',
+                    fontweight='bold')
+    
+    # Configuration
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(top_10_display['CompanyName'], fontsize=11)
+    ax.set_xlabel('Nombre de Commandes', fontsize=12, fontweight='bold')
+    ax.set_title(f' TOP 10 CLIENTS - {int(top10_total):,} COMMANDES ({pourcentage:.1f}% du total)',
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    # Ligne de la moyenne
+    moyenne = top_10['Nombre Total Commandes'].mean()
+    ax.axvline(x=moyenne, color='red', linestyle='--', linewidth=2,
+               alpha=0.7, label=f'Moyenne: {int(moyenne):,} cmd')
+    
+    # Grille
+    ax.grid(True, axis='x', alpha=0.3, linestyle=':')
+    
+    # Style
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    
+    # Légende
+    ax.legend(loc='lower right')
+    
+    # Statistiques
+    stats_text = f""" STATISTIQUES:
+• Clients analysés: {len(dataset)}
+• Commandes totales: {int(total_general):,}
+• Moyenne par client: {dataset['Nombre Total Commandes'].mean():.1f} cmd
+• Meilleur client: {int(top_10['Nombre Total Commandes'].max()):,} cmd
+• Top 10: {int(top10_total):,} cmd ({pourcentage:.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+               bbox=dict(boxstyle="round,pad=0.5", facecolor="lightblue", alpha=0.8))
+    
+    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    
+    # 5. Afficher les résultats
+    print("\n" + "="*70)
+    print("TOP 10 CLIENTS:")
+    print("="*70)
+    
+    for i, row in top_10.iterrows():
+        client_pourcentage = (row['Nombre Total Commandes'] / total_general * 100) if total_general > 0 else 0
+        print(f"{row['CompanyName']}: {int(row['Nombre Total Commandes']):,} cmd ({client_pourcentage:.1f}%)")
+    
+    plt.show()

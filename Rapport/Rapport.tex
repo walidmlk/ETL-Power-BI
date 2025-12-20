@@ -1,0 +1,2854 @@
+\documentclass[12pt,a4paper]{report}
+
+% Packages essentiels
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{caption}
+
+% Configuration de la page
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% Configuration des listings de code
+\lstdefinestyle{sqlstyle}{
+    language=SQL,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    captionpos=b
+}
+
+\lstdefinestyle{daxstyle}{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{purple}\bfseries,
+    commentstyle=\color{green!60!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    captionpos=b
+}
+
+% Hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+    pdftitle={Rapport ETL Power BI}
+}
+
+\begin{document}
+
+% Page de garde
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+     % Logo 
+    \includegraphics[width=0.3\textwidth]{images/logo.png}\par
+     \vspace*{2cm}
+    
+    {\Huge\bfseries Rapport de Projet :\par}
+    \vspace{1cm}
+    {\LARGE Business Intelligence avec Power BI\par}
+    \vspace{1.5cm}
+    {\Large Création d'un ETL et d'un entrepôt de données\par}
+    \vspace{2cm}
+    
+    
+    \vspace{6cm}
+    {\large Réalisé par : MALEK Chakib Walid\par}
+    
+    
+    \vfill
+    
+    {\large Année universitaire 2025-2026\par}
+\end{titlepage}
+
+% Table des matières
+\tableofcontents
+\newpage
+
+% Liste des figures
+\listoffigures
+\newpage
+
+% ==========================================
+% CHAPITRE 1: INTRODUCTION À LA BI
+% ==========================================
+
+\chapter{Introduction à la Business Intelligence}
+
+\section{Définition}
+
+La Business Intelligence (BI) est l'ensemble des technologies et processus permettant de transformer les données brutes en informations exploitables pour la prise de décision. Elle combine la collecte, l'analyse et la visualisation de données pour aider les organisations à mieux comprendre leur activité et à optimiser leurs performances.
+
+\section{Composantes d'une solution BI}
+
+Une solution BI complète comprend quatre éléments principaux :
+
+\begin{itemize}
+    \item \textbf{Sources de données} : Bases de données, fichiers Excel, APIs, etc.
+    \item \textbf{ETL (Extract, Transform, Load)} : Processus d'extraction, transformation et chargement des données
+    \item \textbf{Entrepôt de données (Data Warehouse)} : Stockage centralisé des données pour l'analyse
+    \item \textbf{Visualisation} : Tableaux de bord et rapports interactifs
+\end{itemize}
+
+% Schéma architecture BI
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/architecture_bi.png}
+    \caption{Architecture d'une solution Business Intelligence}
+    \label{fig:architecture_bi}
+\end{figure}
+
+\section{Objectifs du projet}
+
+Ce projet vise à :
+\begin{itemize}
+    \item Mettre en place un processus ETL avec Power BI
+    \item Créer un entrepôt de données à partir de deux bases : SQL Server et Microsoft Access
+    \item Concevoir des visualisations pour l'analyse des données
+\end{itemize}
+
+% ==========================================
+% CHAPITRE 2: PRÉSENTATION DE POWER BI
+% ==========================================
+
+\chapter{Présentation de Power BI}
+
+\section{Qu'est-ce que Power BI ?}
+
+Power BI est une plateforme de Business Intelligence développée par Microsoft. C'est un outil complet qui permet de se connecter à diverses sources de données, de les transformer, de les modéliser et de créer des visualisations interactives.
+
+\subsection{Composantes de Power BI}
+
+\begin{itemize}
+    \item \textbf{Power BI Desktop} : Application Windows gratuite pour créer des rapports
+    \item \textbf{Power BI Service} : Plateforme cloud pour partager et collaborer
+    \item \textbf{Power BI Mobile} : Applications pour consulter les rapports sur mobile
+\end{itemize}
+
+\section{Fonctionnalités principales}
+
+\subsection{Power Query - L'outil ETL}
+
+Power Query est l'éditeur de transformation des données intégré à Power BI. Il permet de :
+\begin{itemize}
+    \item Se connecter à plus de 150 sources de données
+    \item Nettoyer et transformer les données
+    \item Fusionner et combiner des tables
+    \item Automatiser les étapes de transformation
+\end{itemize}
+
+
+\subsection{Modélisation des données}
+
+Power BI permet de créer un modèle relationnel entre les tables avec :
+\begin{itemize}
+    \item Création de relations (1:N, N:1)
+    \item Définition de hiérarchies
+    \item Calculs avec DAX (Data Analysis Expressions)
+\end{itemize}
+
+\subsection{Visualisations}
+
+Large choix de visuels pour créer des tableaux de bord interactifs :
+\begin{itemize}
+    \item Graphiques (barres, lignes, secteurs, cartes)
+    \item Tableaux et matrices
+    \item Cartes géographiques
+    \item Indicateurs KPI
+    \item Visuels personnalisés (Python, R)
+\end{itemize}
+
+
+\section{Avantages de Power BI}
+
+\begin{itemize}
+    \item Interface intuitive et facile à prendre en main
+    \item Version Desktop gratuite
+    \item Intégration native avec l'écosystème Microsoft
+    \item Mises à jour mensuelles
+    \item Grande communauté d'utilisateurs
+    \item Performances élevées pour traiter de gros volumes de données
+\end{itemize}
+
+% ==========================================
+% CHAPITRE 3: INSTALLATION DE POWER BI
+% ==========================================
+
+\chapter{Installation de Power BI Desktop}
+
+\section{Prérequis}
+
+\begin{itemize}
+    \item Windows 10 ou ultérieur (64 bits)
+    \item 2 Go de RAM minimum (8 Go recommandés)
+    \item 2 Go d'espace disque disponible
+\end{itemize}
+
+\section{Téléchargement et Installation}
+
+\subsection{Téléchargement}
+
+Aller sur \url{https://powerbi.microsoft.com} et cliquer sur "Télécharger gratuitement".
+
+
+\subsection{Installation}
+
+\begin{enumerate}
+    \item Exécuter le fichier téléchargé
+    \item Accepter les conditions d'utilisation
+    \item Suivre l'assistant d'installation
+    \item Lancer Power BI Desktop
+\end{enumerate}
+
+
+
+Power BI Desktop est maintenant installé et prêt à être utilisé !
+
+% ==========================================
+% CHAPITRE 4: EXPLORATION DE POWER BI
+% ==========================================
+
+\chapter{Exploration de l'outil Power BI}
+
+\section{Les trois vues principales}
+
+Power BI Desktop offre trois vues pour travailler avec les données :
+
+\subsection{Vue Rapport}
+
+C'est la vue principale pour créer des visualisations. Elle permet de :
+\begin{itemize}
+    \item Créer et organiser des visuels (graphiques, tableaux, cartes)
+    \item Appliquer des filtres
+    \item Configurer l'interactivité entre les visuels
+\end{itemize}
+
+
+\subsection{Vue Données}
+
+Affiche les données sous forme de tableaux. Utile pour :
+\begin{itemize}
+    \item Vérifier les données importées
+    \item Créer des colonnes calculées
+    \item Inspecter la qualité des données
+\end{itemize}
+
+
+\subsection{Vue Modèle}
+
+Permet de gérer les relations entre les tables :
+\begin{itemize}
+    \item Visualiser le schéma du modèle de données
+    \item Créer et modifier les relations entre tables
+    \item Définir les cardinalités (1:N, N:1)
+\end{itemize}
+
+
+\section{Les panneaux principaux}
+
+\subsection{Panneau Champs}
+
+Situé à droite, il affiche toutes les tables et colonnes du modèle de données. On peut :
+\begin{itemize}
+    \item Glisser-déposer les champs vers les visuels
+    \item Créer des mesures et colonnes calculées
+    \item Organiser les champs par table
+\end{itemize}
+
+\subsection{Panneau Visualisations}
+
+Contient :
+\begin{itemize}
+    \item La galerie de visuels disponibles (graphiques, tableaux, cartes)
+    \item Les propriétés du visuel sélectionné (axes, valeurs, légendes)
+    \item Les options de formatage (couleurs, titres, étiquettes)
+\end{itemize}
+
+\subsection{Panneau Filtres}
+
+Permet d'appliquer des filtres à trois niveaux :
+\begin{itemize}
+    \item \textbf{Filtre visuel} : S'applique uniquement au visuel sélectionné
+    \item \textbf{Filtre de page} : S'applique à tous les visuels de la page
+    \item \textbf{Filtre de rapport} : S'applique à toutes les pages du rapport
+\end{itemize}
+
+
+\section{Power Query Editor}
+
+\subsection{Accès à Power Query}
+
+Accessible via : \textbf{Accueil → Transformer les données}
+
+Power Query est l'outil ETL de Power BI qui permet de préparer et nettoyer les données avant de les charger dans le modèle.
+
+\subsection{Fonctionnalités principales}
+
+\begin{itemize}
+    \item \textbf{Connexion aux sources} : SQL Server, Excel, Access, CSV, Web, etc.
+    \item \textbf{Transformations} : Filtrer, trier, grouper, fusionner, pivoter
+    \item \textbf{Nettoyage} : Supprimer doublons, remplacer valeurs, gérer les erreurs
+    \item \textbf{Étapes appliquées} : Historique de toutes les transformations
+\end{itemize}
+
+
+\section{DAX - Langage de calcul}
+
+\subsection{Qu'est-ce que DAX ?}
+
+DAX (Data Analysis Expressions) est le langage de formules de Power BI pour créer des calculs personnalisés.
+
+\subsection{Types de calculs}
+
+\begin{itemize}
+    \item \textbf{Mesures} : Calculs dynamiques évalués selon le contexte
+    \item \textbf{Colonnes calculées} : Calculs ligne par ligne dans une table
+    \item \textbf{Tables calculées} : Création de nouvelles tables
+\end{itemize}
+
+\subsection{Exemples de mesures DAX}
+
+\begin{lstlisting}[style=daxstyle, caption=Exemples de mesures DAX simples]
+// Somme des ventes
+Total Ventes = SUM(Orders[TotalPrice])
+
+// Nombre de commandes
+Nb Commandes = COUNTROWS(Orders)
+
+// Moyenne des ventes
+Moyenne Ventes = AVERAGE(Orders[TotalPrice])
+\end{lstlisting}
+
+\section{Visualisations dans Power BI}
+
+\subsection{Visuels natifs de Power BI}
+
+Power BI propose une large gamme de visualisations natives :
+
+\begin{itemize}
+    \item Graphiques en barres, colonnes, lignes
+    \item Graphiques en secteurs et en anneau
+    \item Tableaux et matrices
+    \item Cartes géographiques
+    \item Jauges et indicateurs KPI
+    \item Graphiques combinés
+\end{itemize}
+
+\subsection{Visualisations avec Python}
+
+Power BI permet d'intégrer des scripts Python pour créer des visualisations personnalisées. Les visuels Python permettent de créer des graphiques statistiques avancés et des visualisations personnalisées non disponibles nativement dans Power BI.
+
+% ==========================================
+% CHAPITRE 5: COMPARAISON TALEND vs POWER BI
+% ==========================================
+
+\chapter{Comparaison entre Talend et Power BI}
+
+\section{Positionnement des outils}
+
+\begin{itemize}
+    \item \textbf{Talend} : Plateforme ETL spécialisée dans l'intégration de données complexes
+    \item \textbf{Power BI} : Solution BI complète incluant ETL (Power Query), modélisation et visualisation
+\end{itemize}
+
+\section{Principales différences}
+
+\subsection{Interface}
+
+\textbf{Talend} : Interface graphique par composants avec flux de données visuels. Génère du code Java.
+
+% Screenshot Talend
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/talend_interface.png}
+    \caption{Interface Talend}
+    \label{fig:talend_interface}
+\end{figure}
+
+\textbf{Power BI} : Interface moderne et intuitive. Power Query avec transformations par étapes.
+
+% Screenshot Power Query
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/powerbi_powerquery.png}
+    \caption{Power Query dans Power BI}
+    \label{fig:powerbi_powerquery}
+\end{figure}
+
+\subsection{Comparaison synthétique}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Critère} & \textbf{Talend} & \textbf{Power BI} \\
+\hline
+Focus & ETL complexe & BI complète \\
+\hline
+Utilisateurs & Data engineers & Analystes métiers \\
+\hline
+Connecteurs & 900+ & 150+ \\
+\hline
+Volumes & Big Data & Millions lignes \\
+\hline
+Visualisation & Non intégrée & Complète \\
+\hline
+Facilité & Moyenne & Facile \\
+\hline
+\end{tabular}
+\caption{Comparaison Talend vs Power BI}
+\label{tab:comparatif}
+\end{table}
+
+\section{Choix pour ce projet}
+
+Nous avons choisi \textbf{Power BI} pour ce projet car :
+\begin{itemize}
+    \item Solution complète (ETL + visualisation)
+    \item Adapté aux volumes de données (base Northwind)
+    \item Facilité et rapidité de développement
+    \item Excellente intégration avec SQL Server et Access
+\end{itemize}
+
+% ==========================================
+% CHAPITRE 6: SÉLECTION DES DONNÉES
+% ==========================================
+
+\chapter{Sélection des données}
+
+\section{Présentation de la base Northwind}
+
+\subsection{Description}
+
+Northwind est une base de données exemple de Microsoft représentant une entreprise fictive d'import-export de produits alimentaires. Elle contient des informations complètes sur :
+
+\begin{itemize}
+    \item Les clients et leurs commandes
+    \item Les employés et leurs territoires de vente
+    \item Les produits et les fournisseurs
+    \item Les détails des transactions commerciales
+\end{itemize}
+
+\subsection{Schéma de la base}
+
+La base Northwind comprend plusieurs tables reliées entre elles par des clés étrangères, formant un modèle relationnel complet.
+
+% Screenshot schéma Northwind
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/northwind_schema.png}
+    \caption{Schéma de la base de données Northwind}
+    \label{fig:northwind_schema}
+\end{figure}
+
+\section{Tables sélectionnées depuis SQL Server}
+
+Pour notre entrepôt de données, nous avons sélectionné cinq tables depuis SQL Server :
+
+\subsection{Table Customers}
+
+\textbf{Description :} Informations sur les clients de l'entreprise.
+
+
+\begin{itemize}
+    \item CustomerID : Identifiant unique du client
+    \item CompanyName : Nom de l'entreprise
+    \item ContactName : Nom du contact
+    \item ContactTitle : Fonction du contact
+    \item Adress : Adresse de l'entrprise
+    \item City : Ville
+    \item Region : Region
+    \item PostalCode : Code postal
+    \item Country : Pays
+    \item Phone : Numero de telephone
+    \item Fax : Fax
+\end{itemize}
+
+\textbf{Utilisation :} Dimension Client pour analyser les ventes par client et par région.
+
+\subsection{Table Employees}
+
+\textbf{Description :} Informations sur les employés.
+
+\begin{itemize}
+    \item EmployeeID : Identifiant unique de l'employé
+    \item LastName : Nom de famille
+    \item FirstName : Prénom
+    \item City : Ville
+    \item Region : Date d'embauche
+    \item BirthDate : Date de naissance
+\end{itemize}
+
+\textbf{Utilisation :} Dimension Employé pour analyser les performances commerciales par vendeur.
+
+\subsection{Table EmployeeTerritories}
+
+\textbf{Description :} Table de liaison entre employés et territoires.
+
+\begin{itemize}
+    \item EmployeeID : Référence à l'employé
+    \item TerritoryID : Référence au territoire
+\end{itemize}
+
+\textbf{Utilisation :} Permet d'associer les employés à leurs zones géographiques de vente.
+
+\subsection{Table Territories}
+
+\textbf{Description :} Territoires de vente de l'entreprise.
+
+\begin{itemize}
+    \item TerritoryID : Identifiant du territoire
+    \item TerritoryDescription : Nom du territoire
+    \item RegionID : Référence à la région
+\end{itemize}
+
+
+\subsection{Table Orders}
+
+\textbf{Description :} Commandes passées par les clients.
+
+\begin{itemize}
+    \item OrderID : Identifiant unique de la commande
+    \item CustomerID : Référence au client
+    \item EmployeeID : Référence à l'employé
+    \item OrderDate : Date de la commande
+    \item ShippedDate : Date d'expédition
+\end{itemize}
+
+\textbf{Utilisation :} Base pour la table de faits de l'entrepôt.
+
+
+\section{Tables sélectionnées depuis Microsoft Access}
+
+La deuxième source de données provient d'une base Microsoft Access contenant des informations complémentaires.
+
+\subsection{Nécessité de l'export vers Excel}
+
+Microsoft Access ne se connecte pas aussi facilement que SQL Server à Power BI. La solution recommandée est d'exporter les tables vers Excel avant l'import.
+
+\subsubsection{Procédure d'export}
+
+\begin{enumerate}
+    \item Ouvrir la base Access Northwind
+    \item Pour chaque table à exporter :
+    \begin{itemize}
+        \item Sélectionner la table
+        \item Données externes → Excel
+        \item Choisir le format et l'emplacement de sauvegarde
+        \item Exporter
+    \end{itemize}
+\end{enumerate}
+
+% Screenshot export Access
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/access_export.png}
+    \caption{Export des tables depuis Access}
+    \label{fig:access_export}
+\end{figure}
+
+\subsection{Tables exportées}
+
+\subsubsection{Customers (Access)}
+\begin{itemize}
+    \item Fichier : Customers.xlsx
+    \item Contient des données clients complémentaires ou historiques
+\end{itemize}
+
+\subsubsection{Employees (Access)}
+\begin{itemize}
+    \item Fichier : Employees.xlsx
+    \item Informations additionnelles sur les employés
+\end{itemize}
+
+\subsubsection{Orders (Access)}
+\begin{itemize}
+    \item Fichier : Orders.xlsx
+    \item Commandes additionnelles ou données historiques
+\end{itemize}
+
+\section{Nettoyage des fichiers Excel}
+
+\subsection{Colonnes à supprimer}
+
+Avant l'import dans Power BI, il est nécessaire de nettoyer les fichiers Excel exportés pour ne conserver que les colonnes pertinentes.
+
+\subsubsection{Types de colonnes à éliminer}
+
+\begin{itemize}
+    \item Colonnes vides ou sans données
+    \item Colonnes système (OLE Object, Notes non structurées)
+    \item Colonnes redondantes avec les données SQL Server
+    \item Colonnes non pertinentes pour l'analyse (photos, signatures, etc.)
+\end{itemize}
+
+% Screenshot nettoyage Excel
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/excel_cleaning.png}
+    \caption{Nettoyage des colonnes dans Excel AVANT}
+    \label{fig:excel_cleaning}
+\end{figure}
+
+% Screenshot nettoyage Excel
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/excel_cleaned.png}
+    \caption{Nettoyage des colonnes dans Excel APRES}
+    \label{fig:excel_cleaned}
+\end{figure}
+
+\subsection{Standardisation des données}
+
+Lors du nettoyage, s'assurer de :
+\begin{itemize}
+    \item Uniformiser les noms de colonnes (pas d'espaces, caractères spéciaux)
+    \item Vérifier les types de données (dates, nombres, texte)
+    \item Supprimer les lignes vides
+    \item Gérer les valeurs nulles
+\end{itemize}
+
+\section{Récapitulatif des sources}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{4cm}|p{6cm}|}
+\hline
+\textbf{Source} & \textbf{Table} & \textbf{Utilisation} \\
+\hline
+SQL Server & Customers & Dimension Client \\
+\cline{2-3}
+ & Employees & Dimension Employé \\
+\cline{2-3}
+ & EmployeeTerritories & Liaison Employé-Territoire \\
+\cline{2-3}
+ & Territories & Données sur le territoire \\
+\cline{2-3}
+ & Orders & Table de faits \\
+\hline
+Access (Excel) & Customers & Données complémentaires \\
+\cline{2-3}
+ & Employees & Données complémentaires \\
+\cline{2-3}
+ & Orders & Données historiques \\
+\hline
+\end{tabular}
+\caption{Récapitulatif des sources de données}
+\label{tab:sources_recapitulatif}
+\end{table}
+
+Les données sont maintenant prêtes à être importées dans Power BI pour le processus ETL et la création de l'entrepôt de données.
+
+% ==========================================
+% CHAPITRE 7: DÉPLOIEMENT DES TABLES
+% ==========================================
+
+\chapter{Déploiement des tables dans Power BI}
+
+\section{Introduction}
+
+Le déploiement consiste à charger les données depuis les différentes sources dans Power BI pour pouvoir les transformer et les modéliser.
+
+\section{Connexion à SQL Server}
+
+\subsection{Procédure de connexion}
+
+Pour importer les tables depuis SQL Server :
+
+\begin{enumerate}
+    \item Ouvrir Power BI Desktop
+    \item Cliquer sur \textbf{Accueil} → \textbf{Obtenir des données} → \textbf{SQL Server}
+    \item Dans la fenêtre de connexion, renseigner :
+    \begin{itemize}
+        \item \textbf{Serveur} : Nom ou adresse IP du serveur SQL Server
+        \item \textbf{Base de données} : Northwind
+    \end{itemize}
+    \item Cliquer sur \textbf{OK}
+\end{enumerate}
+
+% Screenshot connexion SQL Server
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/sqlserver_connection.png}
+    \caption{Connexion à SQL Server}
+    \label{fig:sqlserver_connection}
+\end{figure}
+
+\subsection{Sélection des tables SQL Server}
+
+Dans la fenêtre de navigation :
+
+\begin{enumerate}
+    \item Cocher les tables nécessaires :
+    \begin{itemize}
+        \item Customers
+        \item Employees
+        \item EmployeeTerritories
+        \item Territories
+        \item Orders
+    \end{itemize}
+    \item Cliquer sur \textbf{Charger} pour importer directement les tables
+\end{enumerate}
+
+% Screenshot sélection tables
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/table_choice.png}
+    \caption{Sélection des tables depuis SQL Server}
+    \label{fig:table_choice}
+\end{figure}
+
+\section{Importation des fichiers Excel}
+
+\subsection{Procédure d'importation}
+
+Les tables Access ayant été préalablement exportées vers Excel, nous les importons maintenant :
+
+\begin{enumerate}
+    \item Cliquer sur \textbf{Accueil} → \textbf{Obtenir des données} → \textbf{Excel}
+    \item Naviguer vers l'emplacement des fichiers Excel
+    \item Sélectionner le premier fichier : \texttt{Customers\_Access.xlsx}
+    \item Dans la fenêtre de navigation, sélectionner la feuille contenant les données
+    \item Cliquer sur \textbf{Charger}
+    \item Répéter l'opération pour :
+    \begin{itemize}
+        \item \texttt{Employees\_Access.xlsx}
+        \item \texttt{Orders\_Access.xlsx}
+    \end{itemize}
+\end{enumerate}
+
+% Screenshot import Excel
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/import_excel.png}
+    \caption{Importation des fichiers Excel dans Power BI}
+    \label{fig:import_excel}
+\end{figure}
+
+\section{Vérification du chargement}
+
+\subsection{Panneau Champs}
+
+Après le chargement de toutes les sources, vérifier dans le panneau Champs (à droite) que toutes les tables sont présentes :
+
+\textbf{Tables SQL Server :}
+\begin{itemize}
+    \item Customers
+    \item Employees
+    \item EmployeeTerritories
+    \item Territories
+    \item Orders
+\end{itemize}
+
+\textbf{Tables Excel (Access) :}
+\begin{itemize}
+    \item Customers\_Excel (ou Customers\_Access)
+    \item Employees\_Excel (ou Employees\_Access)
+    \item Temps\_Excel (ou Orders\_Access pour les dates)
+\end{itemize}
+
+
+\subsection{Vérification des données}
+
+Pour chaque table, vérifier rapidement :
+
+\begin{enumerate}
+    \item Aller dans la \textbf{Vue Données} (icône de tableau à gauche)
+    \item Sélectionner une table dans le panneau Champs
+    \item Vérifier :
+    \begin{itemize}
+        \item Le nombre de lignes chargées
+        \item Les colonnes présentes
+        \item L'absence d'erreurs dans les données
+    \end{itemize}
+\end{enumerate}
+
+% Screenshot vue données
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/verif_donnees.png}
+    \caption{Vérification des données chargées}
+    \label{fig:verif_donnees}
+\end{figure}
+
+\section{Résumé du déploiement}
+
+À ce stade, toutes les tables sources sont chargées dans Power BI :
+
+\begin{itemize}
+    \item 5 tables depuis SQL Server
+    \item 3 fichiers Excel (données Access)
+    \item Total : 8 sources de données prêtes pour transformation
+\end{itemize}
+
+Les données sont maintenant disponibles pour la phase de transformation et la création des dimensions dans Power Query Editor.
+
+% ==========================================
+% CHAPITRE 8: CRÉATION DES DIMENSIONS
+% ==========================================
+
+\chapter{Création et remplissage des dimensions}
+
+\section{Introduction}
+
+Les dimensions sont créées dans Power Query Editor en fusionnant et transformant les données des différentes sources. Notre entrepôt suivra un modèle en étoile avec trois dimensions principales.
+
+\section{Dimension Employee (DimEmployee)}
+
+\subsection{Objectif}
+
+Créer une dimension Employee unique en fusionnant les données de SQL Server (Employees, EmployeeTerritories, Territories) et du fichier Excel (Employees\_Access), avec ajout d'une clé de substitution.
+
+\subsection{Accès à Power Query}
+
+Pour créer cette dimension :
+\begin{enumerate}
+    \item Cliquer sur \textbf{Accueil} → \textbf{Transformer les données}
+    \item L'éditeur Power Query s'ouvre
+    \item Créer une nouvelle requête vide : \textbf{Nouvelle source} → \textbf{Requête vide}
+    \item Nommer la requête : \textbf{DimEmployee}
+\end{enumerate}
+
+\subsection{Script Power Query M}
+
+Dans l'éditeur avancé de la requête DimEmployee, saisir le code suivant :
+
+\begin{lstlisting}[style=sqlstyle, caption=Script complet de création de DimEmployee]
+let
+    // =====================================================
+    // ETAPE 1: Preparer Employees (SSMS) avec Territories
+    // =====================================================
+    // Jointure Employees + EmployeeTerritories
+    Employees_WithTerritories = Table.NestedJoin(
+        #"Employees", 
+        {"EmployeeID"}, 
+        #"EmployeeTerritories", 
+        {"EmployeeID"}, 
+        "EmpTerritories", 
+        JoinKind.LeftOuter
+    ),
+    
+    // Developper la colonne TerritoryID
+    #"ExpandedEmpTerritories" = Table.ExpandTableColumn(
+        Employees_WithTerritories, 
+        "EmpTerritories", 
+        {"TerritoryID"}, 
+        {"TerritoryID"}
+    ),
+    
+    // Jointure avec Territories
+    Employees_WithTerritoryDesc = Table.NestedJoin(
+        #"ExpandedEmpTerritories", 
+        {"TerritoryID"}, 
+        #"Territories", 
+        {"TerritoryID"}, 
+        "TerritoryData", 
+        JoinKind.LeftOuter
+    ),
+    
+    // Developper TerritoryDescription
+    #"ExpandedTerritoryData" = Table.ExpandTableColumn(
+        Employees_WithTerritoryDesc, 
+        "TerritoryData", 
+        {"TerritoryDescription"}, 
+        {"TerritoryDescription"}
+    ),
+    
+    // Selection colonnes SSMS
+    SSMS_Prepared = Table.SelectColumns(
+        #"ExpandedTerritoryData", 
+        {
+            "EmployeeID", 
+            "LastName", 
+            "FirstName", 
+            "Region", 
+            "TerritoryID", 
+            "TerritoryDescription"
+        }
+    ),
+    
+    // Ajout colonne Source
+    #"SSMS_WithSource" = Table.AddColumn(
+        SSMS_Prepared, 
+        "Source", 
+        each "SSMS"
+    ),
+
+    // =====================================================
+    // ETAPE 2: Preparer Employees_Excel
+    // =====================================================
+    Excel_Prepared = Table.SelectColumns(
+        #"Employees_Excel", 
+        {"ID", "Last Name", "First Name", "City", "State/Province"}
+    ),
+    
+    #"Excel_WithSource" = Table.AddColumn(
+        Excel_Prepared, 
+        "Source", 
+        each "EXCEL"
+    ),
+
+    // =====================================================
+    // ETAPE 3: Standardiser les noms de colonnes
+    // =====================================================
+    SSMS_Standardized = Table.RenameColumns(
+        #"SSMS_WithSource", 
+        {
+            {"EmployeeID", "id_employee_prod"},
+            {"LastName", "Nom"},
+            {"FirstName", "Prenom"},
+            {"TerritoryID", "Territory"},
+            {"TerritoryDescription", "TerritoryDesc"},
+            {"Region", "Region"},
+            {"Source", "source_prod"}
+        }
+    ),
+
+    Excel_Standardized = Table.RenameColumns(
+        #"Excel_WithSource", 
+        {
+            {"ID", "id_employee_prod"},
+            {"Last Name", "Nom"},
+            {"First Name", "Prenom"},
+            {"City", "Territory"},
+            {"State/Province", "TerritoryDesc"},
+            {"Source", "source_prod"}
+        }
+    ),
+    
+    // Ajouter Region vide pour Excel
+    #"Excel_WithRegion" = Table.AddColumn(
+        Excel_Standardized, 
+        "Region", 
+        each null, 
+        type text
+    ),
+
+    // =====================================================
+    // ETAPE 4: Combiner les deux sources
+    // =====================================================
+    CombinedData = Table.Combine({
+        SSMS_Standardized, 
+        #"Excel_WithRegion"
+    }),
+
+    // =====================================================
+    // ETAPE 5: Convertir id_employee_prod en texte
+    // =====================================================
+    #"TypeCorrige" = Table.TransformColumnTypes(
+        CombinedData, 
+        {{"id_employee_prod", type text}}
+    ),
+
+    // =====================================================
+    // ETAPE 6: Ajouter l'ID sequentiel unique
+    // =====================================================
+    #"AddedIndex" = Table.AddIndexColumn(
+        #"TypeCorrige", 
+        "id_seqEmployee", 
+        1, 
+        1, 
+        Int64.Type
+    ),
+
+    // =====================================================
+    // ETAPE 7: Selection ordre final des colonnes
+    // =====================================================
+    #"FinalColumns" = Table.SelectColumns(
+        #"AddedIndex", 
+        {
+            "id_seqEmployee",
+            "id_employee_prod", 
+            "source_prod",
+            "Nom",
+            "Prenom",
+            "Territory",
+            "TerritoryDesc",
+            "Region"
+        }
+    )
+in
+    #"FinalColumns"
+\end{lstlisting}
+
+\subsection{Explication des étapes}
+
+\subsubsection{Étape 1 : Enrichissement des données SSMS}
+
+Cette étape réalise trois jointures successives :
+\begin{enumerate}
+    \item \textbf{Employees + EmployeeTerritories} : Associe chaque employé à ses territoires
+    \item \textbf{Résultat + Territories} : Récupère la description des territoires
+    \item \textbf{Sélection des colonnes} : Garde uniquement les champs pertinents
+    \item \textbf{Ajout de la source} : Marque les données comme provenant de "SSMS"
+\end{enumerate}
+
+\subsubsection{Étape 2 : Préparation des données Excel}
+
+\begin{itemize}
+    \item Sélection des colonnes du fichier Employees\_Excel
+    \item Ajout d'une colonne "Source" avec la valeur "EXCEL"
+\end{itemize}
+
+\subsubsection{Étape 3 : Standardisation}
+
+Renommage des colonnes pour avoir la même structure :
+\begin{itemize}
+    \item \texttt{EmployeeID} → \texttt{id\_employee\_prod}
+    \item \texttt{LastName} → \texttt{Nom}
+    \item \texttt{FirstName} → \texttt{Prenom}
+    \item Etc.
+\end{itemize}
+
+Ajout de la colonne \texttt{Region} (valeur null) pour Excel afin d'harmoniser les structures.
+
+\subsubsection{Étape 4 : Combinaison}
+
+Fusion verticale des deux sources avec \texttt{Table.Combine} :
+\begin{itemize}
+    \item Les lignes de SSMS
+    \item Les lignes d'Excel
+    \item = Une seule table unifiée
+\end{itemize}
+
+\subsubsection{Étape 5 : Conversion des types}
+
+Conversion de \texttt{id\_employee\_prod} en texte pour uniformiser les identifiants (certains sont numériques, d'autres textuels).
+
+\subsubsection{Étape 6 : Clé de substitution}
+
+Ajout d'un identifiant unique séquentiel \texttt{id\_seqEmployee} qui commence à 1 et s'incrémente de 1 pour chaque ligne.
+
+\subsubsection{Étape 7 : Sélection finale}
+
+Organisation des colonnes dans l'ordre souhaité pour la dimension.
+
+\subsection{Structure finale de DimEmployee}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3.5cm}|p{2cm}|p{8cm}|}
+\hline
+\textbf{Colonne} & \textbf{Type} & \textbf{Description} \\
+\hline
+id\_seqEmployee & Entier & Clé de substitution unique (surrogate key) \\
+\hline
+id\_employee\_prod & Texte & Identifiant employé d'origine (business key) \\
+\hline
+source\_prod & Texte & Source des données : SSMS ou EXCEL \\
+\hline
+Nom & Texte & Nom de famille de l'employé \\
+\hline
+Prenom & Texte & Prénom de l'employé \\
+\hline
+Territory & Texte & Identifiant du territoire \\
+\hline
+TerritoryDesc & Texte & Description du territoire de vente \\
+\hline
+Region & Texte & Région géographique (null pour Excel) \\
+\hline
+\end{tabular}
+\caption{Structure de la dimension DimEmployee}
+\label{tab:structure_dimemployee}
+\end{table}
+
+\subsection{Chargement de la dimension}
+
+Une fois le script validé :
+\begin{enumerate}
+    \item Cliquer sur \textbf{Fermer et appliquer} dans Power Query
+    \item La dimension DimEmployee est chargée dans le modèle
+    \item Vérifier dans la \textbf{Vue Données} que la table est présente
+\end{enumerate}
+
+% Screenshot DimEmployee résultat
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/dimemployee.png}
+    \caption{Dimension DimEmployee créée}
+    \label{fig:dimemployee}
+\end{figure}
+
+La dimension Employee est maintenant prête. Nous allons créer les autres dimensions selon le même principe.
+
+\section{Dimension Client (DimClient)}
+
+\subsection{Objectif}
+
+Créer une dimension Client unique en fusionnant les données de SQL Server (Customers) et du fichier Excel (Customers\_Access), avec ajout d'une clé de substitution.
+
+\subsection{Script Power Query M}
+
+Créer une nouvelle requête nommée \textbf{DimClient} et saisir le code suivant :
+
+\begin{lstlisting}[style=sqlstyle, caption=Script complet de création de DimClient]
+let
+    // =====================================================
+    // ETAPE 1: Preparer Customers (SQL Server)
+    // =====================================================
+    Customers_SSMS_Prepared = Table.SelectColumns(
+        #"Customers", 
+        {"CustomerID", "CompanyName", "City"}
+    ),
+    
+    #"SSMS_WithSource" = Table.AddColumn(
+        Customers_SSMS_Prepared, 
+        "Source", 
+        each "SSMS"
+    ),
+    
+    // =====================================================
+    // ETAPE 2: Preparer Customers_Excel
+    // =====================================================
+    Customers_Excel_Prepared = Table.SelectColumns(
+        #"Customers_Excel", 
+        {"ID", "Company", "City"}
+    ),
+    
+    #"Excel_WithSource" = Table.AddColumn(
+        Customers_Excel_Prepared, 
+        "Source", 
+        each "EXCEL"
+    ),
+    
+    // =====================================================
+    // ETAPE 3: Standardiser les noms de colonnes
+    // =====================================================
+    SSMS_Standardized = Table.RenameColumns(
+        #"SSMS_WithSource", 
+        {
+            {"CustomerID", "id_client_prod"},
+            {"CompanyName", "CompanyName"},
+            {"City", "City"},
+            {"Source", "source_prod"}
+        }
+    ),
+    
+    Excel_Standardized = Table.RenameColumns(
+        #"Excel_WithSource", 
+        {
+            {"ID", "id_client_prod"},
+            {"Company", "CompanyName"}, 
+            {"City", "City"},
+            {"Source", "source_prod"}
+        }
+    ),
+    
+    // =====================================================
+    // ETAPE 4: Combiner les deux sources
+    // =====================================================
+    CombinedData = Table.Combine({
+        SSMS_Standardized, 
+        Excel_Standardized
+    }),
+    
+    // =====================================================
+    // ETAPE 5: Convertir id_client_prod en texte
+    // =====================================================
+    #"TypeCorrige" = Table.TransformColumnTypes(
+        CombinedData, 
+        {{"id_client_prod", type text}}
+    ),
+    
+    // =====================================================
+    // ETAPE 6: Ajouter l'ID sequentiel unique
+    // =====================================================
+    #"AddedIndex" = Table.AddIndexColumn(
+        #"TypeCorrige", 
+        "id_seqClient", 
+        1, 
+        1, 
+        Int64.Type
+    ),
+    
+    // =====================================================
+    // ETAPE 7: Selection ordre final des colonnes
+    // =====================================================
+    #"FinalColumns" = Table.SelectColumns(
+        #"AddedIndex", 
+        {
+            "id_seqClient",
+            "id_client_prod", 
+            "source_prod",
+            "CompanyName",
+            "City"
+        }
+    )
+in
+    #"FinalColumns"
+\end{lstlisting}
+
+\subsection{Explication des étapes}
+
+Le processus de création de DimClient suit la même logique que DimEmployee :
+
+\subsubsection{Étape 1 : Préparation des données SQL Server}
+\begin{itemize}
+    \item Sélection des colonnes : CustomerID, CompanyName, City
+    \item Ajout d'une colonne "Source" avec la valeur "SSMS"
+\end{itemize}
+
+\subsubsection{Étape 2 : Préparation des données Excel}
+\begin{itemize}
+    \item Sélection des colonnes : ID, Company, City
+    \item Ajout d'une colonne "Source" avec la valeur "EXCEL"
+\end{itemize}
+
+\subsubsection{Étape 3 : Standardisation des colonnes}
+Renommage pour uniformiser :
+\begin{itemize}
+    \item \texttt{CustomerID} / \texttt{ID} → \texttt{id\_client\_prod}
+    \item \texttt{CompanyName} / \texttt{Company} → \texttt{CompanyName}
+    \item \texttt{City} reste \texttt{City}
+    \item \texttt{Source} → \texttt{source\_prod}
+\end{itemize}
+
+\subsubsection{Étape 4 : Combinaison}
+Fusion verticale des deux sources avec \texttt{Table.Combine}.
+
+\subsubsection{Étape 5 : Conversion des types}
+Conversion de \texttt{id\_client\_prod} en texte pour uniformité.
+
+\subsubsection{Étape 6 : Clé de substitution}
+Ajout de \texttt{id\_seqClient} : identifiant unique séquentiel commençant à 1.
+
+\subsubsection{Étape 7 : Sélection finale}
+Organisation des colonnes dans l'ordre souhaité.
+
+\subsection{Structure finale de DimClient}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3.5cm}|p{2cm}|p{8cm}|}
+\hline
+\textbf{Colonne} & \textbf{Type} & \textbf{Description} \\
+\hline
+id\_seqClient & Entier & Clé de substitution unique \\
+\hline
+id\_client\_prod & Texte & Identifiant client d'origine \\
+\hline
+source\_prod & Texte & Source des données : SSMS ou EXCEL \\
+\hline
+CompanyName & Texte & Nom de l'entreprise cliente \\
+\hline
+City & Texte & Ville du client \\
+\hline
+\end{tabular}
+\caption{Structure de la dimension DimClient}
+\label{tab:structure_dimclient}
+\end{table}
+
+\subsection{Chargement de la dimension}
+
+Après validation du script :
+\begin{enumerate}
+    \item Cliquer sur \textbf{Fermer et appliquer}
+    \item Vérifier dans la Vue Données que DimClient est chargée
+\end{enumerate}
+
+% Screenshot DimClient résultat
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/dimclient.png}
+    \caption{Dimension DimClient créée}
+    \label{fig:dimclient}
+\end{figure}
+
+La dimension Client est maintenant prête. Il reste à créer la dimension Temps.
+
+\section{Dimension Temps (DimTemps)}
+
+\subsection{Objectif}
+
+Créer une dimension temporelle à partir de toutes les dates de commandes provenant de SQL Server (Orders) et du fichier Excel (Temps\_Excel), avec extraction de l'année et du format mois/année.
+
+\subsection{Script Power Query M}
+
+Créer une nouvelle requête nommée \textbf{DimTemps} et saisir le code suivant :
+
+\begin{lstlisting}[style=sqlstyle, caption=Script complet de création de DimTemps]
+let
+    // =====================================================
+    // ETAPE 1: Extraire les dates des commandes
+    // =====================================================
+    // Dates depuis Temps_Excel
+    Dates_TempsExcel = Table.SelectColumns(
+        #"Temps_Excel", 
+        {"Order Date"}
+    ),
+    
+    #"Renomme_TempsExcel" = Table.RenameColumns(
+        Dates_TempsExcel, 
+        {{"Order Date", "DateComplete"}}
+    ),
+    
+    // Dates depuis Orders (SQL Server)
+    Dates_Orders = Table.SelectColumns(
+        #"Orders", 
+        {"OrderDate"}
+    ),
+    
+    #"Renomme_Orders" = Table.RenameColumns(
+        Dates_Orders, 
+        {{"OrderDate", "DateComplete"}}
+    ),
+    
+    // =====================================================
+    // ETAPE 2: Combiner toutes les dates
+    // =====================================================
+    ToutesDates = Table.Combine({
+        #"Renomme_TempsExcel", 
+        #"Renomme_Orders"
+    }),
+    
+    // Filtrer les dates nulles ou vides
+    #"DatesFiltrees" = Table.SelectRows(
+        ToutesDates, 
+        each [DateComplete] <> null and [DateComplete] <> ""
+    ),
+    
+    // Conversion en type date
+    #"TypeDate" = Table.TransformColumnTypes(
+        #"DatesFiltrees", 
+        {{"DateComplete", type date}}
+    ),
+    
+    // =====================================================
+    // ETAPE 3: Ajouter colonnes calculees
+    // =====================================================
+    // Ajout de l'annee
+    #"AjouteAnnee" = Table.AddColumn(
+        #"TypeDate", 
+        "annee", 
+        each Date.Year([DateComplete]), 
+        Int64.Type
+    ),
+    
+    // Ajout du format mois/annee (MM/YYYY)
+    #"AjouteMoisAnnee" = Table.AddColumn(
+        #"AjouteAnnee", 
+        "mois_annee", 
+        each Text.PadStart(
+            Text.From(Date.Month([DateComplete])), 
+            2, 
+            "0"
+        ) & "/" & Text.From(Date.Year([DateComplete])), 
+        type text
+    ),
+    
+    // =====================================================
+    // ETAPE 4: Ajouter l'ID sequentiel
+    // =====================================================
+    #"AjouteIndex" = Table.AddIndexColumn(
+        #"AjouteMoisAnnee", 
+        "id_temps", 
+        1, 
+        1, 
+        Int64.Type
+    ),
+    
+    // =====================================================
+    // ETAPE 5: Selection finale (sans DateComplete)
+    // =====================================================
+    #"SansDateComplete" = Table.SelectColumns(
+        #"AjouteIndex", 
+        {
+            "id_temps",
+            "annee", 
+            "mois_annee"
+        }
+    )
+in
+    #"SansDateComplete"
+\end{lstlisting}
+
+\subsection{Explication des étapes}
+
+\subsubsection{Étape 1 : Extraction des dates}
+
+Extraction des dates depuis deux sources :
+\begin{itemize}
+    \item \textbf{Temps\_Excel} : Colonne "Order Date"
+    \item \textbf{Orders (SQL Server)} : Colonne "OrderDate"
+    \item Les deux colonnes sont renommées en "DateComplete" pour uniformiser
+\end{itemize}
+
+\subsubsection{Étape 2 : Combinaison et nettoyage}
+
+\begin{itemize}
+    \item Fusion de toutes les dates avec \texttt{Table.Combine}
+    \item Filtrage des valeurs nulles ou vides
+    \item Conversion en type \texttt{date}
+\end{itemize}
+
+\subsubsection{Étape 3 : Colonnes calculées}
+
+Ajout de deux colonnes dérivées :
+
+\begin{itemize}
+    \item \textbf{annee} : Extraction de l'année avec \texttt{Date.Year()}
+    \item \textbf{mois\_annee} : Format MM/YYYY
+    \begin{itemize}
+        \item \texttt{Text.PadStart} : Force le mois sur 2 chiffres (01, 02, ..., 12)
+        \item Exemple : 07/1996, 12/1997
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Étape 4 : Clé de substitution}
+
+Ajout de \texttt{id\_temps} : identifiant unique séquentiel.
+
+\subsubsection{Étape 5 : Sélection finale}
+
+Conservation uniquement des colonnes nécessaires :
+\begin{itemize}
+    \item \texttt{id\_temps} : Clé primaire
+    \item \texttt{annee} : Pour analyses annuelles
+    \item \texttt{mois\_annee} : Pour analyses mensuelles
+\end{itemize}
+
+La colonne \texttt{DateComplete} est supprimée car non nécessaire dans la dimension finale.
+
+\subsection{Structure finale de DimTemps}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3.5cm}|p{2cm}|p{8cm}|}
+\hline
+\textbf{Colonne} & \textbf{Type} & \textbf{Description} \\
+\hline
+id\_temps & Entier & Clé de substitution unique \\
+\hline
+annee & Entier & Année de la commande (ex: 1996, 1997) \\
+\hline
+mois\_annee & Texte & Format MM/YYYY (ex: 07/1996, 12/1997) \\
+\hline
+\end{tabular}
+\caption{Structure de la dimension DimTemps}
+\label{tab:structure_dimtemps}
+\end{table}
+
+\subsection{Chargement de la dimension}
+
+Après validation du script :
+\begin{enumerate}
+    \item Cliquer sur \textbf{Fermer et appliquer}
+    \item Vérifier dans la Vue Données que DimTemps est chargée
+\end{enumerate}
+
+% Screenshot DimTemps résultat
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/dimtemps.png}
+    \caption{Dimension DimTemps créée}
+    \label{fig:dimtemps}
+\end{figure}
+
+\section{Récapitulatif des dimensions}
+
+Les trois dimensions de notre entrepôt sont maintenant créées :
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{3cm}|p{8cm}|}
+\hline
+\textbf{Dimension} & \textbf{Clé primaire} & \textbf{Attributs principaux} \\
+\hline
+DimEmployee & id\_seqEmployee & Nom, Prénom, Territory, Region, Source \\
+\hline
+DimClient & id\_seqClient & CompanyName, City, Source \\
+\hline
+DimTemps & id\_temps & Année, Mois/Année \\
+\hline
+\end{tabular}
+\caption{Récapitulatif des trois dimensions}
+\label{tab:recap_dimensions}
+\end{table}
+
+
+\section{Vérification finale}
+
+Dans Power BI Desktop, vérifier que les trois dimensions sont bien chargées :
+
+\begin{enumerate}
+    \item Aller dans la \textbf{Vue Données}
+    \item Vérifier chaque dimension :
+    \begin{itemize}
+        \item DimEmployee : Nombre de lignes, présence de la clé id\_seqEmployee
+        \item DimClient : Nombre de lignes, présence de la clé id\_seqClient
+        \item DimTemps : Nombre de lignes, présence de la clé id\_temps
+    \end{itemize}
+    \item Vérifier qu'il n'y a pas d'erreurs dans les données
+\end{enumerate}
+
+Les dimensions sont maintenant prêtes pour la création de la table de faits et l'établissement des relations dans le modèle en étoile.
+
+% ==========================================
+% CHAPITRE 9: CRÉATION DE LA TABLE DE FAITS
+% ==========================================
+
+\chapter{Création de la table de faits et de l'entrepôt}
+
+\section{Introduction}
+
+La table de faits est l'élément central du modèle en étoile. Elle contient les mesures quantitatives (faits) et les clés étrangères vers les dimensions.
+
+\section{Table de faits : TF\_Commande}
+
+\subsection{Objectif}
+
+Créer une table de faits centralisant les commandes provenant de SQL Server et Excel, avec des métriques sur les livraisons, et liée aux trois dimensions via leurs clés de substitution.
+
+\subsection{Métriques calculées}
+
+La table de faits contient deux mesures principales :
+\begin{itemize}
+    \item \textbf{nbr\_commande\_livrees} : Nombre de commandes livrées (ShippedDate non null)
+    \item \textbf{nbr\_commande\_non\_livrees} : Nombre de commandes non livrées (ShippedDate null)
+\end{itemize}
+
+\subsection{Script Power Query M}
+
+Créer une nouvelle requête nommée \textbf{TF\_Commande} et saisir le code suivant :
+
+\begin{lstlisting}[style=sqlstyle, caption=Script complet de création de TF\_Commande]
+let
+    // =====================================================
+    // ETAPE 1: Preparer les donnees avec flags de livraison
+    // =====================================================
+    // Donnees SQL Server
+    Orders_SSMS = Table.SelectColumns(
+        #"Orders", 
+        {"OrderID", "CustomerID", "EmployeeID", "OrderDate", "ShippedDate"}
+    ),
+    
+    #"SSMS_WithFlags" = Table.AddColumn(
+        Orders_SSMS, 
+        "nbr_commande_livrees", 
+        each if [ShippedDate] <> null then 1 else 0
+    ),
+    
+    #"SSMS_WithFlags2" = Table.AddColumn(
+        #"SSMS_WithFlags", 
+        "nbr_commande_non_livrees", 
+        each if [ShippedDate] = null then 1 else 0
+    ),
+    
+    #"SSMS_WithSource" = Table.AddColumn(
+        #"SSMS_WithFlags2", 
+        "source_prod", 
+        each "SSMS"
+    ),
+
+    // Donnees Excel
+    Orders_Excel_Prepared = Table.SelectColumns(
+        #"Orders_Excel", 
+        {"Order ID", "Customer ID", "Employee ID", "Order Date", "Shipped Date"}
+    ),
+    
+    #"Excel_WithFlags" = Table.AddColumn(
+        Orders_Excel_Prepared, 
+        "nbr_commande_livrees", 
+        each if [Shipped Date] <> null then 1 else 0
+    ),
+    
+    #"Excel_WithFlags2" = Table.AddColumn(
+        #"Excel_WithFlags", 
+        "nbr_commande_non_livrees", 
+        each if [Shipped Date] = null then 1 else 0
+    ),
+    
+    #"Excel_WithSource" = Table.AddColumn(
+        #"Excel_WithFlags2", 
+        "source_prod", 
+        each "EXCEL"
+    ),
+
+    // Standardiser les noms de colonnes
+    SSMS_Standardized = Table.RenameColumns(
+        #"SSMS_WithSource", 
+        {
+            {"OrderID", "OrderID"}, 
+            {"CustomerID", "CustomerID"}, 
+            {"EmployeeID", "EmployeeID"},
+            {"OrderDate", "OrderDate"}, 
+            {"ShippedDate", "ShippedDate"}
+        }
+    ),
+
+    Excel_Standardized = Table.RenameColumns(
+        #"Excel_WithSource", 
+        {
+            {"Order ID", "OrderID"}, 
+            {"Customer ID", "CustomerID"}, 
+            {"Employee ID", "EmployeeID"},
+            {"Order Date", "OrderDate"}, 
+            {"Shipped Date", "ShippedDate"}
+        }
+    ),
+
+    // Combiner les deux sources
+    CombinedData = Table.Combine({
+        SSMS_Standardized, 
+        Excel_Standardized
+    }),
+    
+    // =====================================================
+    // ETAPE 2: Ajouter id_temps sequentiel
+    // =====================================================
+    #"TypeCorrige" = Table.TransformColumnTypes(
+        CombinedData, 
+        {
+            {"CustomerID", type text}, 
+            {"EmployeeID", type text}, 
+            {"OrderID", type text},
+            {"OrderDate", type date}
+        }
+    ),
+
+    // Ajouter id_temps (1 par commande)
+    #"AjouteIdTemps" = Table.AddIndexColumn(
+        #"TypeCorrige", 
+        "id_temps", 
+        1, 
+        1, 
+        Int64.Type
+    ),
+
+    // =====================================================
+    // ETAPE 3: Jointures avec DimClient et DimEmployee
+    // =====================================================
+    // Jointure avec DimClient
+    #"JoinDimClient" = Table.NestedJoin(
+        #"AjouteIdTemps", 
+        {"CustomerID", "source_prod"}, 
+        #"DimClient", 
+        {"id_client_prod", "source_prod"}, 
+        "ClientData", 
+        JoinKind.LeftOuter
+    ),
+    
+    #"ExpandedClient" = Table.ExpandTableColumn(
+        #"JoinDimClient", 
+        "ClientData", 
+        {"id_seqClient"}, 
+        {"id_seqClient"}
+    ),
+
+    // Dedoublonner DimEmployee avant jointure
+    Dim_Employee_Unique = Table.Group(
+        #"Dim_Employee", 
+        {"id_employee_prod", "source_prod"}, 
+        {
+            {"id_seqEmployee", each List.Min([id_seqEmployee]), Int64.Type}
+        }
+    ),
+    
+    // Jointure avec DimEmployee
+    #"JoinDimEmployee" = Table.NestedJoin(
+        #"ExpandedClient", 
+        {"EmployeeID", "source_prod"}, 
+        Dim_Employee_Unique, 
+        {"id_employee_prod", "source_prod"}, 
+        "EmployeeData", 
+        JoinKind.LeftOuter
+    ),
+    
+    #"ExpandedEmployee" = Table.ExpandTableColumn(
+        #"JoinDimEmployee", 
+        "EmployeeData", 
+        {"id_seqEmployee"}, 
+        {"id_seqEmployee"}
+    ),
+
+    // =====================================================
+    // ETAPE 4: Agregation par commande
+    // =====================================================
+    #"AgregeParCommande" = Table.Group(
+        #"ExpandedEmployee", 
+        {
+            "OrderID", 
+            "id_temps", 
+            "id_seqEmployee", 
+            "id_seqClient", 
+            "source_prod"
+        }, 
+        {
+            {"nbr_commande_livrees", 
+             each List.Sum([nbr_commande_livrees]), 
+             type number},
+            {"nbr_commande_non_livrees", 
+             each List.Sum([nbr_commande_non_livrees]), 
+             type number}
+        }
+    ),
+
+    // =====================================================
+    // ETAPE 5: Nettoyage final
+    // =====================================================
+    #"ColonnesNettoyees" = Table.RemoveColumns(
+        #"AgregeParCommande", 
+        {"OrderID", "source_prod"}
+    ),
+
+    #"AddedIndex" = Table.AddIndexColumn(
+        #"ColonnesNettoyees", 
+        "id_seq_fait", 
+        1, 
+        1, 
+        Int64.Type
+    ),
+
+    #"FinalColumns" = Table.SelectColumns(
+        #"AddedIndex", 
+        {
+            "id_seq_fait", 
+            "id_temps", 
+            "id_seqEmployee", 
+            "id_seqClient", 
+            "nbr_commande_livrees", 
+            "nbr_commande_non_livrees"
+        }
+    )
+in
+    #"FinalColumns"
+\end{lstlisting}
+
+\subsection{Explication détaillée des étapes}
+
+\subsubsection{Étape 1 : Préparation des données sources}
+
+\textbf{Calcul des flags de livraison :}
+\begin{itemize}
+    \item \textbf{nbr\_commande\_livrees} : 
+    \begin{itemize}
+        \item Si ShippedDate n'est pas null → valeur = 1
+        \item Sinon → valeur = 0
+    \end{itemize}
+    \item \textbf{nbr\_commande\_non\_livrees} :
+    \begin{itemize}
+        \item Si ShippedDate est null → valeur = 1
+        \item Sinon → valeur = 0
+    \end{itemize}
+\end{itemize}
+
+Ces flags permettront d'agréger facilement le nombre de commandes livrées/non livrées.
+
+\textbf{Ajout de la source :}
+\begin{itemize}
+    \item "SSMS" pour les données SQL Server
+    \item "EXCEL" pour les données du fichier Excel
+\end{itemize}
+
+\textbf{Standardisation et combinaison :}
+\begin{itemize}
+    \item Renommage des colonnes pour uniformiser
+    \item Fusion avec \texttt{Table.Combine}
+\end{itemize}
+
+\subsubsection{Étape 2 : Ajout de id\_temps}
+
+Ajout d'un identifiant temporel séquentiel :
+\begin{itemize}
+    \item \texttt{id\_temps} : commence à 1 et s'incrémente de 1
+    \item Chaque commande reçoit un id\_temps unique
+    \item Permet de lier la table de faits avec DimTemps
+\end{itemize}
+
+\subsubsection{Étape 3 : Jointures avec les dimensions}
+
+\textbf{Jointure avec DimClient :}
+\begin{itemize}
+    \item Critère : CustomerID + source\_prod
+    \item Récupération de \texttt{id\_seqClient}
+    \item Type : LeftOuter (garde toutes les commandes)
+\end{itemize}
+
+\textbf{Dédoublonnage de DimEmployee :}
+\begin{itemize}
+    \item Problème : DimEmployee peut contenir des doublons (un employé avec plusieurs territoires)
+    \item Solution : Grouper par id\_employee\_prod + source\_prod
+    \item Prendre le \texttt{List.Min([id\_seqEmployee])} pour garder un seul id
+\end{itemize}
+
+\textbf{Jointure avec DimEmployee :}
+\begin{itemize}
+    \item Critère : EmployeeID + source\_prod
+    \item Récupération de \texttt{id\_seqEmployee}
+    \item Type : LeftOuter
+\end{itemize}
+
+\subsubsection{Étape 4 : Agrégation par commande}
+
+Regroupement par :
+\begin{itemize}
+    \item OrderID (identifiant de commande)
+    \item id\_temps
+    \item id\_seqEmployee
+    \item id\_seqClient
+    \item source\_prod
+\end{itemize}
+
+Calcul des sommes :
+\begin{itemize}
+    \item Sum(nbr\_commande\_livrees)
+    \item Sum(nbr\_commande\_non\_livrees)
+\end{itemize}
+
+\subsubsection{Étape 5 : Nettoyage final}
+
+\begin{itemize}
+    \item Suppression des colonnes techniques : OrderID, source\_prod
+    \item Ajout de \texttt{id\_seq\_fait} : clé primaire de la table de faits
+    \item Sélection des colonnes finales dans l'ordre
+\end{itemize}
+
+\subsection{Structure finale de TF\_Commande}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3.5cm}|p{2cm}|p{8cm}|}
+\hline
+\textbf{Colonne} & \textbf{Type} & \textbf{Description} \\
+\hline
+id\_seq\_fait & Entier & Clé primaire de la table de faits \\
+\hline
+id\_temps & Entier & Clé étrangère vers DimTemps \\
+\hline
+id\_seqEmployee & Entier & Clé étrangère vers DimEmployee \\
+\hline
+id\_seqClient & Entier & Clé étrangère vers DimClient \\
+\hline
+nbr\_commande\_livrees & Nombre & Nombre de commandes livrées \\
+\hline
+nbr\_commande\_non\_livrees & Nombre & Nombre de commandes non livrées \\
+\hline
+\end{tabular}
+\caption{Structure de la table de faits TF\_Commande}
+\label{tab:structure_tfcommande}
+\end{table}
+
+\subsection{Chargement de la table de faits}
+
+Après validation du script :
+\begin{enumerate}
+    \item Cliquer sur \textbf{Fermer et appliquer}
+    \item Vérifier dans la Vue Données que TF\_Commande est chargée
+    \item Vérifier le nombre de lignes (environ 878 lignes)
+\end{enumerate}
+
+% Screenshot TF_Commande résultat
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/tfcommande.png}
+    \caption{Table de faits TF\_Commande créée}
+    \label{fig:tfcommande}
+\end{figure}
+
+\section{Création du modèle en étoile}
+
+\subsection{Établissement des relations}
+
+Dans la \textbf{Vue Modèle}, créer les relations entre la table de faits et les dimensions :
+
+\subsubsection{Procédure de création des relations}
+
+\begin{enumerate}
+    \item Aller dans la Vue Modèle (icône en bas à gauche)
+    \item Pour chaque relation :
+    \begin{itemize}
+        \item Glisser-déposer la clé de la table de faits vers la clé de la dimension
+        \item Vérifier la cardinalité (N:1)
+        \item Vérifier la direction du filtre croisé (Simple)
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Relations à créer}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{4cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{Depuis (Fait)} & \textbf{Vers (Dimension)} & \textbf{Cardinalité} & \textbf{Filtre} \\
+\hline
+id\_temps & DimTemps & 1:1 & Simple \\
+\hline
+id\_seqEmployee & DimEmployee & N:1 & Simple \\
+\hline
+id\_seqClient & DimClient & N:1 & Simple \\
+\hline
+\end{tabular}
+\caption{Relations du modèle en étoile}
+\label{tab:relations_modele}
+\end{table}
+
+% Screenshot modèle en étoile
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/modele_etoile.png}
+    \caption{Modèle en étoile complet}
+    \label{fig:modele_etoile}
+\end{figure}
+
+\subsection{Vérification du modèle}
+
+Vérifier que :
+\begin{itemize}
+    \item Toutes les relations sont actives (trait continu)
+    \item Les cardinalités sont correctes (N:1)
+    \item Les filtres croisés fonctionnent
+    \item Aucun message d'erreur n'apparaît
+\end{itemize}
+
+\section{Conclusion}
+
+L'entrepôt de données est maintenant complet :
+
+\begin{itemize}
+    \item \textbf{3 dimensions} : DimEmployee, DimClient, DimTemps
+    \item \textbf{1 table de faits} : TF\_Commande
+    \item \textbf{Modèle en étoile} : Relations établies
+    \item \textbf{Données intégrées} : SQL Server + Excel (Access)
+\end{itemize}
+
+L'entrepôt est prêt pour la création de mesures DAX et de visualisations.
+
+
+% ==========================================
+% CHAPITRE 10: VISUALISATIONS ET GRAPHIQUES
+% ==========================================
+
+\chapter{Visualisations et graphiques}
+
+\section{Introduction}
+
+Ce chapitre présente les visualisations créées pour analyser les données de l'entrepôt. Nous avons développé 6 visualisations : 4 avec Python pour des analyses statistiques avancées, et 2 avec Power BI natif pour bénéficier de l'interactivité.
+
+\section{Visualisations Python}
+
+Les visualisations Python permettent de créer des graphiques statistiques personnalisés avec les bibliothèques matplotlib et pandas.
+
+\subsection{Configuration Python dans Power BI}
+
+Avant de créer les visuels Python :
+\begin{enumerate}
+    \item Installer Python avec les bibliothèques : pandas, matplotlib
+    \item Dans Power BI : Fichier → Options et paramètres → Options Python
+    \item Sélectionner le répertoire d'installation de Python
+\end{enumerate}
+
+\subsection{Visuel Python 1 : Volume des commandes par mois}
+
+\subsubsection{Objectif}
+
+Afficher l'évolution mensuelle du volume de commandes en distinguant celles livrées des non livrées pour identifier les tendances et problèmes de livraison.
+
+\subsubsection{Données utilisées}
+
+Colonnes : id\_temps, nbr\_commande\_livrees, nbr\_commande\_non\_livrees, mois\_annee
+
+\subsubsection{Code Python}
+
+\begin{lstlisting}[style=sqlstyle, caption=Volume des commandes par mois]
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Verification des colonnes
+colonnes_requises = ['id_temps', 'nbr_commande_livrees', 
+                     'nbr_commande_non_livrees', 'mois_annee']
+colonnes_manquantes = [col for col in colonnes_requises 
+                       if col not in dataset.columns]
+
+if colonnes_manquantes:
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.text(0.5, 0.5, 
+            f"Glissez ces colonnes:\n{', '.join(colonnes_manquantes)}", 
+            ha='center', va='center', fontsize=12, color='red',
+            bbox=dict(boxstyle="round,pad=0.5", 
+                     facecolor="yellow", alpha=0.7))
+    ax.axis('off')
+    plt.show()
+else:
+    # Agregation par mois
+    commandes_par_mois = dataset.groupby('mois_annee').agg({
+        'nbr_commande_livrees': 'sum',
+        'nbr_commande_non_livrees': 'sum'
+    }).reset_index()
+    
+    commandes_par_mois['total_commandes'] = (
+        commandes_par_mois['nbr_commande_livrees'] + 
+        commandes_par_mois['nbr_commande_non_livrees']
+    )
+    
+    # Trier par date
+    try:
+        commandes_par_mois['date_sort'] = pd.to_datetime(
+            commandes_par_mois['mois_annee'] + '/01', 
+            format='%m/%Y/%d'
+        )
+        commandes_par_mois = commandes_par_mois.sort_values('date_sort')
+    except:
+        commandes_par_mois = commandes_par_mois.sort_values('mois_annee')
+    
+    # Creation du graphique
+    fig, ax = plt.subplots(figsize=(14, 7))
+    x = range(len(commandes_par_mois))
+    mois_labels = commandes_par_mois['mois_annee'].tolist()
+    
+    # Barres empilees
+    ax.bar(x, commandes_par_mois['nbr_commande_livrees'], 
+           label='Commandes Livrees', color='green', alpha=0.7)
+    ax.bar(x, commandes_par_mois['nbr_commande_non_livrees'],
+           bottom=commandes_par_mois['nbr_commande_livrees'],
+           label='Commandes Non Livrees', color='red', alpha=0.7)
+    
+    ax.set_xlabel('Mois', fontsize=12)
+    ax.set_ylabel('Nombre de Commandes', fontsize=12)
+    ax.set_title('VOLUME DES COMMANDES PAR MOIS', 
+                 fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(mois_labels, rotation=45, ha='right')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Totaux au-dessus des barres
+    for i, total in enumerate(commandes_par_mois['total_commandes']):
+        ax.text(i, total + (total*0.01), f'{total:,}', 
+                ha='center', va='bottom', fontsize=9)
+    
+    # Statistiques
+    total_periode = commandes_par_mois['total_commandes'].sum()
+    stats_text = f"Total periode: {total_periode:,} commandes"
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.5", 
+                         facecolor="lightgray", alpha=0.8))
+    
+    plt.tight_layout()
+    plt.show()
+\end{lstlisting}
+
+\subsubsection{Explication}
+
+\begin{itemize}
+    \item \textbf{Vérification} : Contrôle de la présence des colonnes nécessaires
+    \item \textbf{Agrégation} : Groupement par mois avec somme des commandes
+    \item \textbf{Tri} : Organisation chronologique des mois
+    \item \textbf{Graphique} : Barres empilées (vert = livrées, rouge = non livrées)
+    \item \textbf{Annotations} : Totaux affichés sur chaque barre
+\end{itemize}
+
+% Screenshot visuel Python 1
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/python_visuel1.png}
+    \caption{Volume des commandes par mois}
+    \label{fig:python_visuel1}
+\end{figure}
+
+\subsection{Visuel Python 2 : Taux de livraison par mois}
+
+\subsubsection{Objectif}
+
+Calculer et visualiser le pourcentage de commandes livrées pour chaque mois afin d'évaluer la performance logistique et identifier les mois problématiques.
+
+\subsubsection{Données utilisées}
+
+Colonnes : id\_temps, nbr\_commande\_livrees, nbr\_commande\_non\_livrees, mois\_annee
+
+\subsubsection{Code Python}
+
+\begin{lstlisting}[style=sqlstyle, caption=Taux de livraison par mois]
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Verification des colonnes
+colonnes_requises = ['id_temps', 'nbr_commande_livrees', 
+                     'nbr_commande_non_livrees', 'mois_annee']
+colonnes_manquantes = [col for col in colonnes_requises 
+                       if col not in dataset.columns]
+
+if colonnes_manquantes:
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.text(0.5, 0.5, 
+            f"Glissez ces colonnes:\n{', '.join(colonnes_manquantes)}", 
+            ha='center', va='center', fontsize=12, color='red',
+            bbox=dict(boxstyle="round,pad=0.5", 
+                     facecolor="yellow", alpha=0.7))
+    ax.axis('off')
+    plt.show()
+else:
+    # Agregation par mois
+    commandes_par_mois = dataset.groupby('mois_annee').agg({
+        'nbr_commande_livrees': 'sum',
+        'nbr_commande_non_livrees': 'sum'
+    }).reset_index()
+    
+    commandes_par_mois['total_commandes'] = (
+        commandes_par_mois['nbr_commande_livrees'] + 
+        commandes_par_mois['nbr_commande_non_livrees']
+    )
+    
+    commandes_par_mois['taux_livraison'] = (
+        commandes_par_mois['nbr_commande_livrees'] / 
+        commandes_par_mois['total_commandes'] * 100
+    ).round(1)
+    
+    # Trier par date
+    try:
+        commandes_par_mois['date_sort'] = pd.to_datetime(
+            commandes_par_mois['mois_annee'] + '/01', 
+            format='%m/%Y/%d'
+        )
+        commandes_par_mois = commandes_par_mois.sort_values('date_sort')
+    except:
+        commandes_par_mois = commandes_par_mois.sort_values('mois_annee')
+    
+    # Creation du graphique
+    fig, ax = plt.subplots(figsize=(14, 7))
+    x = range(len(commandes_par_mois))
+    mois_labels = commandes_par_mois['mois_annee'].tolist()
+    taux = commandes_par_mois['taux_livraison'].tolist()
+    
+    # Ligne avec points
+    ax.plot(x, taux, marker='o', linewidth=2, color='blue', 
+            markersize=8, label='Taux de Livraison')
+    
+    # Zone remplie sous la ligne
+    ax.fill_between(x, taux, alpha=0.2, color='blue')
+    
+    # Ligne d'objectif
+    ax.axhline(y=80, color='red', linestyle='--', 
+               linewidth=2, alpha=0.7, label='Objectif 80%')
+    
+    # Mise en forme
+    ax.set_xlabel('Mois', fontsize=12)
+    ax.set_ylabel('Taux de Livraison (%)', fontsize=12)
+    ax.set_title('TAUX DE LIVRAISON PAR MOIS', 
+                 fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(mois_labels, rotation=45, ha='right')
+    ax.set_ylim([0, 105])
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='upper right')
+    
+    # Valeurs sur les points
+    for i, (taux_val, mois) in enumerate(zip(taux, mois_labels)):
+        ax.text(i, taux_val + 2, f'{taux_val}%', 
+                ha='center', va='bottom', fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.2", 
+                         facecolor="white", alpha=0.8))
+    
+    # Indicateurs de performance
+    taux_moyen = commandes_par_mois['taux_livraison'].mean()
+    au_dessus_objectif = (commandes_par_mois['taux_livraison'] >= 80).sum()
+    total_mois = len(commandes_par_mois)
+    
+    stats_text = f""" PERFORMANCE:
+- Taux moyen: {taux_moyen:.1f}%
+- Mois >= 80%: {au_dessus_objectif}/{total_mois} 
+  ({au_dessus_objectif/total_mois*100:.0f}%)
+- Meilleur: {commandes_par_mois.loc[commandes_par_mois['taux_livraison'].idxmax(), 'mois_annee']} 
+  ({commandes_par_mois['taux_livraison'].max():.1f}%)
+- Pire: {commandes_par_mois.loc[commandes_par_mois['taux_livraison'].idxmin(), 'mois_annee']} 
+  ({commandes_par_mois['taux_livraison'].min():.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+                bbox=dict(boxstyle="round,pad=0.5", 
+                         facecolor="lightgray", alpha=0.8))
+    
+    # Coloration de fond par performance
+    for i in x:
+        if taux[i] >= 90:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='green')
+        elif taux[i] >= 80:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='lightgreen')
+        elif taux[i] >= 70:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='orange')
+        else:
+            ax.axvspan(i-0.4, i+0.4, alpha=0.1, color='red')
+    
+    plt.tight_layout()
+    plt.show()
+\end{lstlisting}
+
+\subsubsection{Explication}
+
+\begin{itemize}
+    \item \textbf{Calcul du taux} : (Commandes livrées / Total) × 100
+    \item \textbf{Ligne d'objectif} : Barre horizontale rouge à 80\%
+    \item \textbf{Zones colorées} : Fond coloré selon performance (vert ≥90\%, orange 70-80\%, rouge <70\%)
+    \item \textbf{Statistiques} : Taux moyen, meilleur/pire mois, atteinte objectif
+    \item \textbf{Annotations} : Valeurs de taux sur chaque point
+\end{itemize}
+
+% Screenshot visuel Python 2
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/python_visuel2.png}
+    \caption{Taux de livraison par mois}
+    \label{fig:python_visuel2}
+\end{figure}
+
+\subsection{Visuel Python 3 : Top 10 des clients}
+
+\subsubsection{Objectif}
+
+Identifier les 10 clients ayant passé le plus de commandes pour orienter les stratégies commerciales et évaluer la concentration de l'activité.
+
+\subsubsection{Données utilisées}
+
+Colonnes : CompanyName (DimClient), Nombre Total Commandes (mesure calculée)
+
+\subsubsection{Mesure DAX requise}
+
+\begin{lstlisting}[style=daxstyle, caption=Mesure pour le nombre total de commandes]
+Nombre Total Commandes = 
+    SUM(TF_Commande[nbr_commande_livrees]) + 
+    SUM(TF_Commande[nbr_commande_non_livrees])
+\end{lstlisting}
+
+\subsubsection{Code Python}
+
+\begin{lstlisting}[style=sqlstyle, caption=Top 10 clients]
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+print("=== TOP 10 CLIENTS PAR NOMBRE DE COMMANDES ===")
+
+# Verifier les donnees
+print(f" Donnees recues: {len(dataset):,} lignes")
+print(f" Colonnes: {list(dataset.columns)}")
+
+# Verifier la mesure
+if 'Nombre Total Commandes' not in dataset.columns:
+    print(" Glissez la mesure avec CompanyName")
+else:
+    # Calculs
+    total_general = dataset['Nombre Total Commandes'].sum()
+    
+    # Top 10
+    top_10 = dataset.nlargest(10, 'Nombre Total Commandes').copy()
+    top_10_display = top_10.sort_values('Nombre Total Commandes', 
+                                         ascending=True)
+    
+    top10_total = top_10['Nombre Total Commandes'].sum()
+    pourcentage = (top10_total / total_general * 100) 
+    
+    print(f"\n STATISTIQUES:")
+    print(f"   • Clients totaux: {len(dataset)}")
+    print(f"   • Commandes totales: {int(total_general):,}")
+    print(f"   • Top 10: {pourcentage:.1f}%")
+    
+    # Graphique
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Barres horizontales
+    y_pos = np.arange(len(top_10_display))
+    colors = plt.cm.Blues(np.linspace(0.4, 0.9, len(top_10_display)))
+    
+    bars = ax.barh(y_pos, top_10_display['Nombre Total Commandes'], 
+                   color=colors, edgecolor='darkblue', height=0.7)
+    
+    # Ajouter valeurs
+    for i, (bar, total) in enumerate(zip(bars, 
+                          top_10_display['Nombre Total Commandes'])):
+        pourcentage_client = (total / top10_total * 100)
+        
+        # Texte a droite
+        ax.text(bar.get_width() + bar.get_width() * 0.01,
+                bar.get_y() + bar.get_height()/2,
+                f"{int(total):,}\n({pourcentage_client:.1f}%)",
+                va='center', fontsize=10, fontweight='bold')
+        
+        # Texte interieur pour grandes barres
+        if bar.get_width() > top_10_display['Nombre Total Commandes'].max() * 0.3:
+            ax.text(bar.get_width() * 0.02,
+                    bar.get_y() + bar.get_height()/2,
+                    top_10_display.iloc[i]['CompanyName'],
+                    va='center', fontsize=9, 
+                    color='white', fontweight='bold')
+    
+    # Configuration
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(top_10_display['CompanyName'], fontsize=11)
+    ax.set_xlabel('Nombre de Commandes', fontsize=12, fontweight='bold')
+    ax.set_title(f' TOP 10 CLIENTS - {int(top10_total):,} COMMANDES 
+                 ({pourcentage:.1f}% du total)',
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    # Ligne moyenne
+    moyenne = top_10['Nombre Total Commandes'].mean()
+    ax.axvline(x=moyenne, color='red', linestyle='--', linewidth=2,
+               alpha=0.7, label=f'Moyenne: {int(moyenne):,} cmd')
+    
+    # Grille et style
+    ax.grid(True, axis='x', alpha=0.3, linestyle=':')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.legend(loc='lower right')
+    
+    # Statistiques
+    stats_text = f""" STATISTIQUES:
+- Clients: {len(dataset)}
+- Total commandes: {int(total_general):,}
+- Moyenne/client: {dataset['Nombre Total Commandes'].mean():.1f}
+- Meilleur: {int(top_10['Nombre Total Commandes'].max()):,}
+- Top 10: {int(top10_total):,} ({pourcentage:.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+               bbox=dict(boxstyle="round,pad=0.5", 
+                        facecolor="lightblue", alpha=0.8))
+    
+    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    
+    # Afficher resultats
+    print("\nTOP 10 CLIENTS:")
+    for i, row in top_10.iterrows():
+        client_pct = (row['Nombre Total Commandes'] / total_general * 100)
+        print(f"{row['CompanyName']}: {int(row['Nombre Total Commandes']):,} 
+              ({client_pct:.1f}%)")
+    
+    plt.show()
+\end{lstlisting}
+
+\subsubsection{Explication}
+
+\begin{itemize}
+    \item \textbf{Tri et sélection} : Top 10 clients par nombre de commandes
+    \item \textbf{Barres dégradées} : Couleur bleue avec gradient selon le classement
+    \item \textbf{Annotations doubles} : Valeurs absolues et pourcentages
+    \item \textbf{Ligne moyenne} : Référence pour comparer les clients
+    \item \textbf{Statistiques} : Concentration du top 10 dans le total
+\end{itemize}
+
+% Screenshot visuel Python 3
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/python_visuel3.png}
+    \caption{Top 10 des clients}
+    \label{fig:python_visuel3}
+\end{figure}
+
+\subsection{Visuel Python 4 : Top 10 des employés}
+
+\subsubsection{Objectif}
+
+Identifier les 10 employés ayant traité le plus de commandes pour évaluer les performances individuelles et la répartition de la charge de travail.
+
+\subsubsection{Données utilisées}
+
+Colonnes : Nom, Prenom (DimEmployee), Nombre Total Commandes (mesure calculée)
+
+\subsubsection{Code Python}
+
+\begin{lstlisting}[style=sqlstyle, caption=Top 10 employés]
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+print("=== TOP 10 EMPLOYES PAR NOMBRE DE COMMANDES ===")
+
+# Verifier les donnees
+print(f" Donnees: {len(dataset):,} lignes")
+print(f" Colonnes: {list(dataset.columns)}")
+
+if 'Nombre Total Commandes' not in dataset.columns:
+    print(" Glissez 'Nombre Total Commandes' dans Power BI")
+else:
+    # Verifier colonnes nom/prenom
+    has_names = 'Nom' in dataset.columns and 'Prenom' in dataset.columns
+    
+    if has_names:
+        dataset['Employe'] = dataset['Prenom'] + ' ' + dataset['Nom']
+        label_col = 'Employe'
+    elif 'Nom' in dataset.columns:
+        label_col = 'Nom'
+    elif 'id_seqEmployee' in dataset.columns:
+        dataset['Employe'] = 'Emp. ' + dataset['id_seqEmployee'].astype(str)
+        label_col = 'Employe'
+    else:
+        non_measure_cols = [col for col in dataset.columns 
+                           if col != 'Nombre Total Commandes']
+        label_col = non_measure_cols[0] if non_measure_cols else 'index'
+    
+    # Calculs
+    total_general = dataset['Nombre Total Commandes'].sum()
+    
+    # Top 10
+    top_10 = dataset.nlargest(10, 'Nombre Total Commandes').copy()
+    top_10_display = top_10.sort_values('Nombre Total Commandes', 
+                                         ascending=True)
+    
+    top10_total = top_10['Nombre Total Commandes'].sum()
+    pourcentage = (top10_total / total_general * 100)
+    
+    print(f"\n STATISTIQUES:")
+    print(f"   • Employes: {len(dataset)}")
+    print(f"   • Total commandes: {int(total_general):,}")
+    print(f"   • Top 10: {pourcentage:.1f}%")
+    
+    # Graphique
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Barres horizontales
+    y_pos = np.arange(len(top_10_display))
+    colors = plt.cm.Greens(np.linspace(0.4, 0.9, len(top_10_display)))
+    
+    bars = ax.barh(y_pos, top_10_display['Nombre Total Commandes'], 
+                   color=colors, edgecolor='darkgreen', height=0.7)
+    
+    # Valeurs
+    for i, (bar, total) in enumerate(zip(bars, 
+                          top_10_display['Nombre Total Commandes'])):
+        pourcentage_emp = (total / top10_total * 100)
+        
+        # Texte droite
+        ax.text(bar.get_width() + bar.get_width() * 0.01,
+                bar.get_y() + bar.get_height()/2,
+                f"{int(total):,}\n({pourcentage_emp:.1f}%)",
+                va='center', fontsize=10, fontweight='bold')
+        
+        # Nom interieur si place
+        if bar.get_width() > top_10_display['Nombre Total Commandes'].max() * 0.3:
+            label = top_10_display.iloc[i][label_col]
+            if len(str(label)) > 20:
+                label = str(label)[:17] + "..."
+            ax.text(bar.get_width() * 0.02,
+                    bar.get_y() + bar.get_height()/2,
+                    label, va='center', fontsize=9,
+                    color='white', fontweight='bold')
+    
+    # Configuration
+    ax.set_yticks(y_pos)
+    
+    # Labels Y limites
+    y_labels = []
+    for i in range(len(top_10_display)):
+        label = str(top_10_display.iloc[i][label_col])
+        if len(label) > 25:
+            label = label[:22] + "..."
+        y_labels.append(label)
+    
+    ax.set_yticklabels(y_labels, fontsize=11)
+    ax.set_xlabel('Nombre de Commandes', fontsize=12, fontweight='bold')
+    ax.set_title(f' TOP 10 EMPLOYES - {int(top10_total):,} COMMANDES 
+                 ({pourcentage:.1f}% du total)',
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    # Ligne moyenne
+    moyenne = top_10['Nombre Total Commandes'].mean()
+    ax.axvline(x=moyenne, color='red', linestyle='--', linewidth=2,
+               alpha=0.7, label=f'Moyenne: {int(moyenne):,} cmd')
+    
+    # Grille et style
+    ax.grid(True, axis='x', alpha=0.3, linestyle=':')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.legend(loc='lower right')
+    
+    # Statistiques
+    stats_text = f""" STATISTIQUES EMPLOYES:
+- Employes: {len(dataset)}
+- Total: {int(total_general):,}
+- Moyenne/employe: {dataset['Nombre Total Commandes'].mean():.1f}
+- Meilleur: {int(top_10['Nombre Total Commandes'].max()):,}
+- Top 10: {int(top10_total):,} ({pourcentage:.1f}%)"""
+    
+    plt.figtext(0.02, 0.02, stats_text, fontsize=10,
+               bbox=dict(boxstyle="round,pad=0.5", 
+                        facecolor="lightgreen", alpha=0.8))
+    
+    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    
+    # Afficher
+    print("\nTOP 10 EMPLOYES:")
+    for i, row in top_10.iterrows():
+        emp_pct = (row['Nombre Total Commandes'] / total_general * 100)
+        emp_label = row[label_col]
+        print(f"{emp_label}: {int(row['Nombre Total Commandes']):,} 
+              ({emp_pct:.1f}%)")
+    
+    plt.show()
+\end{lstlisting}
+
+\subsubsection{Explication}
+
+\begin{itemize}
+    \item \textbf{Gestion des noms} : Création automatique du nom complet (Prénom + Nom)
+    \item \textbf{Barres vertes} : Gradient de couleur selon le classement
+    \item \textbf{Même structure} : Identique au visuel clients pour cohérence
+    \item \textbf{Ligne moyenne} : Permet d'identifier les sur-performeurs
+    \item \textbf{Statistiques} : Concentration des commandes sur le top 10
+\end{itemize}
+
+% Screenshot visuel Python 4
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/python_visuel4.png}
+    \caption{Top 10 des employés}
+    \label{fig:python_visuel4}
+\end{figure}
+
+\section{Visualisations Power BI natives}
+
+Les visualisations Power BI natives offrent l'avantage majeur de l'interactivité : les filtres croisés permettent de sélectionner un élément dans un visuel et voir automatiquement tous les autres visuels se mettre à jour.
+
+\subsection{Mesure DAX utilisée}
+
+Pour les visuels Power BI, nous avons créé une mesure DAX :
+
+\begin{lstlisting}[style=daxstyle, caption=Mesure Nombre Total Commandes]
+Nombre Total Commandes = 
+    SUM(TF_Commande[nbr_commande_livrees]) + 
+    SUM(TF_Commande[nbr_commande_non_livrees])
+\end{lstlisting}
+
+\subsection{Visuel Power BI 1 : Top clients avec répartition}
+
+\subsubsection{Objectif}
+
+Afficher le classement des meilleurs clients et leur répartition globale avec interaction dynamique entre les deux visuels.
+
+\subsubsection{Composition}
+
+Ce visuel combine deux graphiques :
+\begin{itemize}
+    \item \textbf{Graphique en barres} : Classement des clients par nombre de commandes
+    \item \textbf{Graphique en secteurs (camembert)} : Répartition proportionnelle des commandes par client
+\end{itemize}
+
+\subsubsection{Création du graphique en barres}
+
+\begin{enumerate}
+    \item Dans le panneau Visualisations, sélectionner \textbf{Graphique à barres groupées}
+    \item Configuration :
+    \begin{itemize}
+        \item \textbf{Axe Y} : CompanyName (depuis DimClient)
+        \item \textbf{Axe X} : Nombre Total Commandes (mesure)
+        \item \textbf{Tri} : Décroissant par valeur
+    \end{itemize}
+    \item Formatage :
+    \begin{itemize}
+        \item Couleur des barres : Bleu
+        \item Afficher les étiquettes de données
+        \item Titre : "Top Clients"
+    \end{itemize}
+    \item Le graphique affiche automatiquement les clients dans l'ordre décroissant
+\end{enumerate}
+
+\subsubsection{Création du graphique en secteurs}
+
+\begin{enumerate}
+    \item Dans le panneau Visualisations, sélectionner \textbf{Graphique en secteurs}
+    \item Configuration :
+    \begin{itemize}
+        \item \textbf{Légende} : CompanyName
+        \item \textbf{Valeurs} : Nombre Total Commandes
+    \end{itemize}
+    \item Formatage :
+    \begin{itemize}
+        \item Afficher les pourcentages
+        \item Afficher les étiquettes
+        \item Titre : "Répartition des commandes"
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Interactivité}
+
+L'avantage principal de Power BI : \textbf{les filtres croisés automatiques}
+
+\begin{itemize}
+    \item \textbf{Action} : Cliquer sur un client dans le graphique en barres
+    \item \textbf{Résultat} : Le secteur correspondant dans le camembert se met en évidence
+    \item \textbf{Effet} : Les autres secteurs deviennent semi-transparents
+    \item \textbf{Utilité} : Visualisation immédiate de la part du client sélectionné
+\end{itemize}
+
+% Screenshot visuel Power BI 1
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/powerbi_visuel1.png}
+    \caption{Top clients avec répartition - Power BI natif}
+    \label{fig:powerbi_visuel1}
+\end{figure}
+
+\subsection{Visuel Power BI 2 : Top employés avec répartition}
+
+\subsubsection{Objectif}
+
+Afficher le classement des meilleurs employés et leur répartition avec la même interactivité que pour les clients.
+
+\subsubsection{Composition}
+
+Même principe que pour les clients :
+\begin{itemize}
+    \item \textbf{Graphique en barres} : Top employés par commandes traitées
+    \item \textbf{Graphique en secteurs} : Répartition des commandes par employé
+\end{itemize}
+
+\subsubsection{Création du graphique en barres}
+
+\begin{enumerate}
+    \item Sélectionner \textbf{Graphique à barres groupées}
+    \item Configuration :
+    \begin{itemize}
+        \item \textbf{Axe Y} : Nom et Prénom (depuis DimEmployee)
+        \item \textbf{Axe X} : Nombre Total Commandes
+        \item \textbf{Tri} : Décroissant par valeur
+    \end{itemize}
+    \item Formatage :
+    \begin{itemize}
+        \item Couleur : Vert
+        \item Étiquettes de données activées
+        \item Titre : "Top Employés"
+    \end{itemize}
+    \item Le graphique affiche les employés dans l'ordre décroissant
+\end{enumerate}
+
+\subsubsection{Création du graphique en secteurs}
+
+\begin{enumerate}
+    \item Sélectionner \textbf{Graphique en secteurs}
+    \item Configuration :
+    \begin{itemize}
+        \item \textbf{Légende} : Nom complet employé (Prénom + Nom)
+        \item \textbf{Valeurs} : Nombre Total Commandes
+    \end{itemize}
+    \item Formatage identique au camembert clients
+\end{enumerate}
+
+\subsubsection{Interactivité}
+
+Fonctionnement identique aux visuels clients :
+\begin{itemize}
+    \item Clic sur un employé dans les barres
+    \item Mise en évidence automatique dans le camembert
+    \item Visualisation de sa contribution au total
+\end{itemize}
+
+% Screenshot visuel Power BI 2
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/powerbi_visuel2.png}
+    \caption{Top employés avec répartition - Power BI natif}
+    \label{fig:powerbi_visuel2}
+\end{figure}
+
+\section{Comparaison Python vs Power BI natif}
+
+\subsection{Différences clés observées}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Critère} & \textbf{Python} & \textbf{Power BI natif} \\
+\hline
+Interactivité & Statique (image fixe) & Dynamique avec filtres croisés \\
+\hline
+Personnalisation & Totale via code & Limitée aux options disponibles \\
+\hline
+Création & Code Python nécessaire & Glisser-déposer (no-code) \\
+\hline
+Performance & Plus lent (rendu Python) & Rapide et optimisé \\
+\hline
+Statistiques & Affichage avancé intégré & Nécessite mesures DAX \\
+\hline
+Publication & Desktop uniquement & Compatible Power BI Service \\
+\hline
+\end{tabular}
+\caption{Comparaison des deux approches}
+\label{tab:comparison_python_powerbi}
+\end{table}
+
+\subsection{Avantage de l'interactivité Power BI}
+
+L'exemple le plus parlant de l'interactivité :
+
+\begin{enumerate}
+    \item \textbf{Situation} : Un utilisateur veut analyser un client spécifique
+    \item \textbf{Avec Python} : L'utilisateur doit lire le graphique statiquement
+    \item \textbf{Avec Power BI} : 
+    \begin{itemize}
+        \item Clic sur le client dans le graphique en barres
+        \item → Le camembert met en évidence ce client automatiquement
+        \item → Tous les autres visuels de la page se filtrent sur ce client
+        \item → Les KPI se mettent à jour instantanément
+    \end{itemize}
+\end{enumerate}
+
+Cette interactivité transforme un rapport statique en outil d'exploration dynamique des données.
+
+
+\subsection{Conclusion sur les approches}
+
+\textbf{Quand utiliser Python :}
+\begin{itemize}
+    \item Analyses statistiques avancées
+    \item Graphiques personnalisés spécifiques
+    \item Rapports statiques avec calculs complexes
+    \item Besoins de bibliothèques spécialisées (seaborn, plotly)
+\end{itemize}
+
+\textbf{Quand utiliser Power BI natif :}
+\begin{itemize}
+    \item Dashboards interactifs pour exploration
+    \item Besoins de filtres croisés entre visuels
+    \item Publication sur Power BI Service
+    \item Rapidité de création (no-code)
+    \item Performance optimale
+\end{itemize}
+
+\textbf{Notre approche :} Combiner les deux pour maximiser les avantages : Python pour les analyses détaillées, Power BI natif pour l'exploration interactive.
+
+
+\section{Conclusion du chapitre}
+
+Les visualisations créées permettent une analyse complète des données de l'entrepôt :
+\begin{itemize}
+    \item Les 4 visuels Python offrent des analyses statistiques détaillées avec annotations et statistiques avancées
+    \item Les 2 visuels Power BI natifs permettent une exploration interactive et dynamique
+    \item La combinaison des deux approches maximise les capacités d'analyse
+\end{itemize}
+
+Le choix de l'outil dépend du besoin : analyses statiques approfondies avec Python, ou exploration interactive avec Power BI natif.
+
+% ==========================================
+% CHAPITRE 11: CONCLUSION GÉNÉRALE
+% ==========================================
+
+\chapter{Conclusion}
+
+Ce projet de Business Intelligence avec Power BI nous a permis de mettre en Å"uvre l'ensemble du cycle de vie d'une solution décisionnelle, depuis l'extraction des données jusqu'à leur visualisation interactive.
+
+\section{Objectifs atteints}
+
+Nous avons réussi à créer un entrepôt de données complet en modèle en étoile, intégrant des données hétérogènes provenant de deux sources distinctes : SQL Server et Microsoft Access. Le processus ETL développé avec Power Query a permis de :
+
+\begin{itemize}
+    \item \textbf{Extraire} efficacement les données depuis les bases Northwind
+    \item \textbf{Transformer} ces données en créant trois dimensions (Employee, Client, Temps) avec des clés de substitution
+    \item \textbf{Charger} une table de faits (TF\_Commande) contenant les métriques essentielles sur les commandes
+\end{itemize}
+
+L'architecture en étoile mise en place facilite les requêtes analytiques et garantit la cohérence des analyses à travers l'utilisation de clés de substitution qui permettent de tracer l'origine des données et de gérer l'évolution dimensionnelle.
+
+\section{Apports techniques et compétences développées}
+
+Ce projet nous a permis de maîtriser plusieurs aspects techniques :
+
+\subsection{Power Query et le langage M}
+
+La création de scripts complexes pour fusionner, transformer et nettoyer les données a développé notre compréhension approfondie du processus ETL et des bonnes pratiques de préparation des données.
+
+\subsection{Modélisation dimensionnelle}
+
+La conception d'un modèle en étoile avec ses dimensions et sa table de faits nous a familiarisés avec les concepts fondamentaux du datawarehousing et l'importance d'une architecture bien pensée.
+
+\subsection{DAX (Data Analysis Expressions)}
+
+La création de mesures calculées a enrichi nos compétences en analyse de données et en formulation de KPI pertinents.
+
+\subsection{Visualisation hybride}
+
+L'utilisation combinée de Python (matplotlib, pandas) et des visuels natifs de Power BI nous a permis de comprendre les forces et limites de chaque approche. Python offre une personnalisation avancée et des analyses statistiques poussées, tandis que Power BI natif excelle dans l'interactivité et la facilité d'utilisation.
+
+\section{Comparaison des approches de visualisation}
+
+L'un des enseignements majeurs de ce projet concerne le choix entre visualisations Python et Power BI natif :
+
+\begin{itemize}
+    \item \textbf{Python} s'impose pour les analyses statistiques avancées, les graphiques hautement personnalisés et les rapports statiques nécessitant des calculs complexes
+    \item \textbf{Power BI natif} brille par son interactivité, ses filtres croisés automatiques et sa rapidité d'exécution, idéal pour des dashboards exploratoires
+\end{itemize}
+
+Notre approche hybride, combinant 4 visualisations Python et 2 visualisations Power BI natives, maximise les avantages des deux mondes et offre une solution d'analyse complète et flexible.
+
+\section{Avantages de Power BI}
+
+Ce projet a confirmé les nombreux atouts de Power BI comme plateforme BI complète :
+
+\begin{itemize}
+    \item \textbf{Solution intégrée} : ETL, modélisation et visualisation dans un seul outil
+    \item \textbf{Accessibilité} : Interface intuitive facilitant l'adoption par les utilisateurs métiers
+    \item \textbf{Performance} : Moteur d'analyse rapide capable de traiter efficacement de gros volumes
+    \item \textbf{Écosystème Microsoft} : Intégration native avec SQL Server, Excel et l'ensemble des outils Microsoft
+    \item \textbf{Évolutivité} : De la version Desktop gratuite au Service cloud pour le partage et la collaboration
+\end{itemize}
+
+\section{Perspectives et améliorations futures}
+
+Plusieurs axes d'amélioration pourraient enrichir ce projet :
+
+\subsection{Enrichissement du modèle}
+
+Ajout de dimensions supplémentaires (Produits, Fournisseurs, Catégories) pour des analyses plus granulaires et l'intégration de dimensions temporelles plus détaillées (jour, semaine, trimestre).
+
+\subsection{Calculs avancés}
+
+Développement de mesures DAX plus complexes comme les calculs de croissance, les comparaisons temporelles (année N vs N-1), les moyennes mobiles ou les analyses de cohortes.
+
+\subsection{Optimisation des performances}
+
+Mise en place de tables agrégées pour accélérer les requêtes sur de gros volumes, et optimisation des relations et cardinalités.
+
+\subsection{Automatisation}
+
+Planification des actualisations automatiques des données et mise en place d'alertes sur les KPI critiques.
+
+\subsection{Publication et partage}
+
+Déploiement sur Power BI Service pour permettre l'accès aux rapports depuis n'importe où et la collaboration en temps réel entre utilisateurs.
+
+\subsection{Sécurité}
+
+Implémentation de la sécurité au niveau des lignes (RLS) pour contrôler l'accès aux données selon les profils utilisateurs.
+
+\section{Conclusion finale}
+
+Ce projet démontre qu'avec Power BI, il est possible de mettre en place rapidement et efficacement une solution de Business Intelligence complète et professionnelle. La combinaison d'un ETL robuste avec Power Query, d'un modèle dimensionnel bien conçu et de visualisations pertinentes permet de transformer des données brutes en informations actionables pour la prise de décision.
+
+Au-delà des compétences techniques acquises, ce projet illustre l'importance croissante de la Business Intelligence dans le contexte actuel où les données constituent un actif stratégique majeur pour les organisations. La capacité à extraire, modéliser et visualiser efficacement les données devient une compétence essentielle pour tout professionnel évoluant dans l'environnement data-driven d'aujourd'hui.
+
+Les connaissances et méthodologies développées durant ce projet constituent une base solide pour aborder des problématiques BI plus complexes et pour contribuer efficacement à la transformation digitale des entreprises. Power BI s'est révélé être un outil puissant, accessible et évolutif, parfaitement adapté aux besoins actuels et futurs de l'analyse décisionnelle.
+
+\vspace{1cm}
+
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{center}
+\textit{Ce projet a été réalisé dans le cadre de la formation en Business Intelligence,\\
+année universitaire 2025-2026.}
+\end{center}
+
+\end{document}
